@@ -1190,11 +1190,11 @@
       set('m-stat-pending', pending.length);
       set('m-pending-count', pending.length);
       renderPendingCards(pending);
-      populateStatMinis(pending, todayEvt);
 
       // Manager upcoming
       const timeOffEvents = events.filter(isTimeOff).filter(e=>!e.isPending&&parseD(e.startDate)<=future);
       const todayEvt = timeOffEvents.filter(e=>onDay(e,td));
+      populateStatMinis(pending, todayEvt);
       const weekEvt  = timeOffEvents.filter(e=>inRange(e,ws,we));
       const mUpcoming= events.filter(notPayday).filter(e=>!e.isPending&&parseD(e.startDate)<=future);
 
