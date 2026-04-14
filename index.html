@@ -793,11 +793,16 @@
     const firstName = parts[0].toLowerCase();
     const lastName = parts[parts.length-1].toLowerCase();
 
-    // Match events where the name portion (before " - ") contains both first and last name
+    // Match events by first name + last initial in summary
+    // Handles: "Jane S's Time Off", "Jane S Out Sick", "Jane Smith - PTO" (legacy)
+    const lastInitial = lastName[0].toLowerCase();
     const mine = allEvents.filter(e => {
       if (!e.isOfficeMgrRequest) return false;
-      const evtName = cleanSummary(e.summary).split(' - ')[0].toLowerCase();
-      return evtName.includes(firstName) && evtName.includes(lastName);
+      const s = cleanSummary(e.summary).toLowerCase();
+      // Match "firstname lastinitial" at the start
+      return s.startsWith(firstName + ' ' + lastInitial) ||
+             (s.includes(firstName) && s.includes(' ' + lastInitial + "'")) ||
+             (s.includes(firstName) && s.includes(' ' + lastName));
     });
 
     if (!mine.length) {
@@ -810,8 +815,11 @@
       const isPend = e.isPending;
       const dotColor = isPend ? 'var(--pending)' : 'var(--approved)';
       const label = isPend ? 'Pending' : 'Approved';
-      const evtName = cleanSummary(e.summary).split(' - ');
-      const type = evtName.length > 1 ? evtName[1] : TYPE_LABELS[e.type] ?? 'Time Off';
+      const s = cleanSummary(e.summary);
+      const type = s.includes('Out Sick') ? 'Out Sick' :
+                   s.includes("'s Time Off") ? 'Time Off' :
+                   s.split(' - ').length > 1 ? s.split(' - ')[1] :
+                   TYPE_LABELS[e.type] ?? 'Time Off';
       return `<div class="req-mini-item">
         <div class="req-mini-dot" style="background:${dotColor}"></div>
         <div>
