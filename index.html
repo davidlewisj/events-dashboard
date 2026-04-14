@@ -191,6 +191,13 @@
     .cal-day.today{background:var(--accent);color:#fff;font-weight:600}
     .cal-day.other-month{color:#ccc}
     .cal-dot{width:4px;height:4px;border-radius:50%;display:block}
+    .cal-day{position:relative}
+    .cal-tooltip{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);border-radius:8px;padding:10px 12px;min-width:180px;max-width:220px;z-index:100;font-size:.78rem;box-shadow:0 4px 16px rgba(0,0,0,.15);pointer-events:none}
+    .cal-tooltip::before{content:'';position:absolute;bottom:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-bottom-color:var(--text)}
+    .cal-day:hover .cal-tooltip{display:block}
+    .cal-tooltip-item{padding:3px 0;border-bottom:1px solid rgba(255,255,255,.15);line-height:1.3}
+    .cal-tooltip-item:last-child{border-bottom:none}
+    .cal-tooltip-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:5px;vertical-align:middle;flex-shrink:0}
 
     /* SHARED */
     .empty{padding:32px 22px;text-align:center;color:var(--text-muted)}
@@ -253,7 +260,7 @@
 
         <!-- Calendar -->
         <div class="section">
-          <div class="section-header"><h2><span class="s-icon" style="background:#e8f2f5">📅</span>Calendar</h2></div>
+          <div class="section-header"><h2><span class="s-icon" style="background:#e8f2f5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2d6a7f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>Calendar</h2></div>
           <div class="cal-nav">
             <button onclick="changeMonth(-1)">‹</button>
             <span class="cal-month" id="cal-month"></span>
@@ -265,7 +272,7 @@
         <!-- Upcoming -->
         <div class="section">
           <div class="section-header">
-            <h2><span class="s-icon" style="background:#f5f0ea">🗓</span>Upcoming Events <span style="font-family:'DM Sans';font-size:.78rem;color:var(--text-muted);font-weight:400;margin-left:4px">(next 30 days)</span></h2>
+            <h2><span class="s-icon" style="background:#f5f0ea"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8a7020" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="13" y2="18"/></svg></span>Upcoming Events <span style="font-family:'DM Sans';font-size:.78rem;color:var(--text-muted);font-weight:400;margin-left:4px">(next 30 days)</span></h2>
             <span class="badge badge-neutral" id="s-upcoming-count">0</span>
           </div>
           <div id="s-upcoming-list" class="event-list"><div class="loading"><div class="spinner"></div>Loading...</div></div>
@@ -273,7 +280,7 @@
 
         <!-- My Requests -->
         <div class="section">
-          <div class="section-header"><h2><span class="s-icon" style="background:#fdf0e8">📋</span>My Requests</h2></div>
+          <div class="section-header"><h2><span class="s-icon" style="background:#fdf0e8"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c4622d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg></span>My Requests</h2></div>
           <div id="my-requests-list" class="event-list"><div class="empty"><div class="ei">📋</div><p>Enter your name above to see your requests</p></div></div>
         </div>
 
@@ -281,7 +288,7 @@
 
       <!-- Request Form -->
       <div class="form-card">
-        <div class="form-header"><h2>✉️ Request Time Off</h2></div>
+        <div class="form-header"><h2><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2d6a7f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>Request Time Off</h2></div>
         <div class="form-body">
           <div class="field"><label>Your Name</label><input type="text" id="req-name" placeholder="Jane Smith" oninput="filterMyRequests()" /></div>
           <div class="field"><label>Email</label><input type="email" id="req-email" placeholder="jane@tmjsleep.com" /></div>
@@ -344,7 +351,7 @@
     <div id="mtab-view-pending">
       <div class="section">
         <div class="section-header">
-          <h2><span class="s-icon" style="background:#fdf0e8">⏳</span>Pending Approval</h2>
+          <h2><span class="s-icon" style="background:#fdf0e8"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c4622d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>Pending Approval</h2>
           <span class="badge badge-pending" id="m-pending-count">0</span>
         </div>
         <div id="m-pending-list"><div class="loading"><div class="spinner"></div>Loading...</div></div>
@@ -358,16 +365,16 @@
         <div class="stat-card"><div class="number" id="m-week-count2">–</div><div class="label">This Week</div></div>
       </div>
       <div class="section">
-        <div class="section-header"><h2><span class="s-icon" style="background:#e8f2f5">📅</span>Out Today</h2><span class="badge badge-neutral" id="m-today-count">0</span></div>
+        <div class="section-header"><h2><span class="s-icon" style="background:#e8f2f5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2d6a7f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>Out Today</h2><span class="badge badge-neutral" id="m-today-count">0</span></div>
         <div id="m-today-list" class="event-list"><div class="loading"><div class="spinner"></div>Loading...</div></div>
       </div>
       <div class="section">
-        <div class="section-header"><h2><span class="s-icon" style="background:#eaf4ee">📆</span>Out This Week</h2><span class="badge badge-neutral" id="m-week-count">0</span></div>
+        <div class="section-header"><h2><span class="s-icon" style="background:#eaf4ee"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3a7d5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg></span>Out This Week</h2><span class="badge badge-neutral" id="m-week-count">0</span></div>
         <div id="m-week-list" class="event-list"><div class="loading"><div class="spinner"></div>Loading...</div></div>
       </div>
       <div class="section">
         <div class="section-header">
-          <h2><span class="s-icon" style="background:#f5f0ea">🗓</span>All Upcoming <span style="font-family:'DM Sans';font-size:.78rem;color:var(--text-muted);font-weight:400;margin-left:4px">(next 30 days)</span></h2>
+          <h2><span class="s-icon" style="background:#f5f0ea"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8a7020" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="13" y2="18"/></svg></span>All Upcoming <span style="font-family:'DM Sans';font-size:.78rem;color:var(--text-muted);font-weight:400;margin-left:4px">(next 30 days)</span></h2>
           <span class="badge badge-neutral" id="m-upcoming-count">0</span>
         </div>
         <div id="m-upcoming-list" class="event-list"><div class="loading"><div class="spinner"></div>Loading...</div></div>
@@ -377,7 +384,7 @@
     <!-- HISTORY TAB -->
     <div id="mtab-view-history" style="display:none">
       <div class="section">
-        <div class="section-header"><h2><span class="s-icon" style="background:#eaf4ee">📋</span>Approved Request History</h2></div>
+        <div class="section-header"><h2><span class="s-icon" style="background:#eaf4ee"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3a7d5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg></span>Approved Request History</h2></div>
         <div class="history-filters">
           <input type="text" id="history-search" placeholder="Search name..." oninput="renderHistory()" style="width:180px" />
           <select id="history-role" onchange="renderHistory()">
@@ -442,13 +449,34 @@
     if (tab === 'history') renderHistory();
   }
 
-  function checkPassword() {
+  async function checkPassword() {
     const pw = document.getElementById('pw-input').value;
     if (!pw) return;
-    managerPassword = pw;
-    document.getElementById('gate').classList.remove('show');
-    switchView('manager');
-    loadData();
+    const btn = document.querySelector('.gate-btn');
+    btn.textContent = 'Checking...'; btn.disabled = true;
+    // Verify password against worker by attempting a benign approved call
+    try {
+      const res = await fetch(`${WORKER_URL}/verify`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ password: pw })
+      });
+      const data = await res.json();
+      if (data.error === 'Unauthorized') {
+        document.getElementById('gate-error').style.display = 'block';
+        btn.textContent = 'Sign In'; btn.disabled = false;
+        return;
+      }
+      document.getElementById('gate-error').style.display = 'none';
+      managerPassword = pw;
+      document.getElementById('gate').classList.remove('show');
+      switchView('manager');
+      loadData();
+    } catch(err) {
+      document.getElementById('gate-error').textContent = 'Connection error. Try again.';
+      document.getElementById('gate-error').style.display = 'block';
+    } finally {
+      btn.textContent = 'Sign In'; btn.disabled = false;
+    }
   }
 
   // ── HELPERS ──────────────────────────────────────────────────────────────
@@ -487,7 +515,9 @@
       const target=new Date(calYear,calMonth,d);
       const evts=allEvents.filter(e=>notPayday(e)&&!e.isPending&&onDay(e,target));
       const dots=evts.slice(0,3).map(e=>`<span class="cal-dot" style="background:${TYPE_COLORS[e.type]??'#8a8178'}"></span>`).join('');
-      html+=`<div class="cal-day${isToday?' today':''}"><span>${d}</span><div style="display:flex;gap:2px;flex-wrap:wrap;justify-content:center">${dots}</div></div>`;
+      const tooltipItems = evts.map(e=>`<div class="cal-tooltip-item"><span class="cal-tooltip-dot" style="background:${TYPE_COLORS[e.type]??'#8a8178'}"></span>${cleanSummary(e.summary)}</div>`).join('');
+      const tooltip = evts.length ? `<div class="cal-tooltip">${tooltipItems}</div>` : '';
+      html+=`<div class="cal-day${isToday?' today':''}${evts.length?' has-event':''}" style="${evts.length?'cursor:pointer':''}"><span>${d}</span><div style="display:flex;gap:2px;flex-wrap:wrap;justify-content:center">${dots}</div>${tooltip}</div>`;
     }
     grid.innerHTML=html;
   }
@@ -535,11 +565,13 @@
       ? [
           ['Direct supervisor notified of absence', 'chk-supervisor'],
           ['Office manager notified of absence', 'chk-offmgr'],
+          ['Schedule blocked in AMD for time-off dates', 'chk-amdblock'],
           ['Request entered into Gusto Payroll', 'chk-gusto'],
         ]
       : [
           ['Coverage confirmed with covering staff member', 'chk-coverage'],
           ['AMD schedule checked — no conflicts on these dates', 'chk-amd'],
+          ['Schedule blocked in AMD for time-off dates', 'chk-amdblock'],
           ['Leave balance verified (PTO/sick hours available)', 'chk-balance'],
           ['Minimum staffing confirmed across entities', 'chk-staffing'],
           ['Request entered into Gusto Payroll', 'chk-gusto'],
