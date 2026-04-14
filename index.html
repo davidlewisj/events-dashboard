@@ -528,6 +528,30 @@
       : `<div class="empty"><div class="ei">✓</div><p>${emptyMsg}</p></div>`;
   }
 
+  // ── CHECKLIST BUILDER ────────────────────────────────────────────────────────
+  function buildChecklist(type, i) {
+    const isSick = type === 'sick';
+    const items = isSick
+      ? [
+          ['Direct supervisor notified of absence', 'chk-supervisor'],
+          ['Office manager notified of absence', 'chk-offmgr'],
+          ['Request entered into Gusto Payroll', 'chk-gusto'],
+        ]
+      : [
+          ['Coverage confirmed with covering staff member', 'chk-coverage'],
+          ['AMD schedule checked — no conflicts on these dates', 'chk-amd'],
+          ['Leave balance verified (PTO/sick hours available)', 'chk-balance'],
+          ['Minimum staffing confirmed across entities', 'chk-staffing'],
+          ['Request entered into Gusto Payroll', 'chk-gusto'],
+        ];
+    return items.map(([label,key]) =>
+      `<div class="check-item" id="${key}-${i}" onclick="toggleCheck('${key}-${i}',${i})">
+        <input type="checkbox" id="cb-${key}-${i}" onclick="event.stopPropagation();toggleCheck('${key}-${i}',${i})" />
+        <span>${label}</span>
+      </div>`
+    ).join('');
+  }
+
   // ── PENDING REQUEST CARDS ─────────────────────────────────────────────────
   function renderPendingCards(events) {
     const el = document.getElementById('m-pending-list');
@@ -556,7 +580,7 @@
             </div>
             <div class="req-dates">${fmtRange(e)}</div>
             <div><span class="etype type-${e.type}">${leaveType||TYPE_LABELS[e.type]}</span></div>
-            <div style="font-size:.75rem;color:var(--text-muted)">Submitted ${submitted}</div>
+            <div style="font-size:.75rem;color:var(--text-muted)">${submitted?'Submitted '+submitted:''}</div>
             <button class="expand-btn" id="expand-btn-${i}">Review ›</button>
           </div>
           <div class="request-detail" id="card-detail-${i}">
@@ -573,16 +597,7 @@
 
             <div class="checklist">
               <h3>Manager Checklist <span class="checklist-note" id="check-note-${i}">Complete all items to enable approval</span></h3>
-              ${[
-                ['Coverage confirmed with covering staff member','chk-coverage'],
-                ['AMD schedule checked — no conflicts on these dates','chk-amd'],
-                ['Leave balance verified (PTO/sick hours available)','chk-balance'],
-                ['Minimum staffing confirmed across entities','chk-staffing'],
-              ].map(([label,key])=>`
-                <div class="check-item" id="${key}-${i}" onclick="toggleCheck('${key}-${i}',${i})">
-                  <input type="checkbox" id="cb-${key}-${i}" onclick="event.stopPropagation();toggleCheck('${key}-${i}',${i})" />
-                  <span>${label}</span>
-                </div>`).join('')}
+              ${buildChecklist(e.type, i)}
             </div>
 
             <label style="font-size:.78rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px">Manager Notes (optional)</label>
