@@ -750,25 +750,43 @@
   }
 
   // ── MY REQUESTS ───────────────────────────────────────────────────────────
+  let emailManuallyEdited = false;
+
   function handleNameInput() {
     const nameVal = document.getElementById('req-name').value.trim();
-    // Auto-populate email: first initial + last name + @tmjsleepsolutionsnw.com
     const parts = nameVal.split(' ').filter(Boolean);
-    if (parts.length >= 2) {
-      const emailVal = (parts[0][0] + parts[parts.length-1]).toLowerCase().replace(/[^a-z]/g,'') + '@tmjsleepsolutionsnw.com';
-      const emailEl = document.getElementById('req-email');
-      if (emailEl && (!emailEl.value || emailEl.dataset.autoset === 'true')) {
-        emailEl.value = emailVal;
-        emailEl.dataset.autoset = 'true';
+    const emailEl = document.getElementById('req-email');
+
+    // Auto-populate email: first initial + full last name + @tmjsleepsolutionsnw.com
+    // e.g. "Jane Smith" -> "jsmith@tmjsleepsolutionsnw.com"
+    // Resets whenever name changes, unless user has manually typed in email field
+    if (emailEl && !emailManuallyEdited) {
+      if (parts.length >= 2) {
+        const firstInitial = parts[0][0].toLowerCase();
+        const lastName = parts[parts.length-1].toLowerCase().replace(/[^a-z]/g,'');
+        emailEl.value = `${firstInitial}${lastName}@tmjsleepsolutionsnw.com`;
+      } else {
+        emailEl.value = '';
       }
     }
+
     filterMyRequests();
   }
 
-  // Allow manual email override
+  // Only lock email from autofill if user manually types in the field
+  // Reset the lock if they clear it completely
   document.addEventListener('DOMContentLoaded', () => {
     const emailEl = document.getElementById('req-email');
-    if (emailEl) emailEl.addEventListener('input', () => { emailEl.dataset.autoset = 'false'; });
+    if (emailEl) {
+      emailEl.addEventListener('input', () => {
+        // If they've cleared the field, allow autofill again
+        emailManuallyEdited = emailEl.value.length > 0;
+      });
+      emailEl.addEventListener('focus', () => {
+        // Track if this is a manual edit vs autofill
+        emailEl.dataset.focused = 'true';
+      });
+    }
   });
 
   function openDrawer() {
@@ -792,17 +810,15 @@
 
     const firstName = parts[0].toLowerCase();
     const lastName = parts[parts.length-1].toLowerCase();
-
-    // Match events by first name + last initial in summary
-    // Handles: "Jane S's Time Off", "Jane S Out Sick", "Jane Smith - PTO" (legacy)
+    // Last entry could be a full last name OR just an initial
     const lastInitial = lastName[0].toLowerCase();
+
     const mine = allEvents.filter(e => {
       if (!e.isOfficeMgrRequest) return false;
       const s = cleanSummary(e.summary).toLowerCase();
-      // Match "firstname lastinitial" at the start
-      return s.startsWith(firstName + ' ' + lastInitial) ||
-             (s.includes(firstName) && s.includes(' ' + lastInitial + "'")) ||
-             (s.includes(firstName) && s.includes(' ' + lastName));
+      // Match "Jane S's Time Off" or "Jane S Out Sick"
+      // Works whether user typed "Jane Smith" or "Jane S"
+      return s.startsWith(`${firstName} ${lastInitial}`);
     });
 
     if (!mine.length) {
@@ -1142,6 +1158,8 @@
       document.getElementById('req-end').value=todayStr;
       document.getElementById('dur-full').checked=true;
       toggleDurationType();
+      emailManuallyEdited = false;
+      closeDrawer();
       setTimeout(()=>document.getElementById('form-success').style.display='none',6000);
       setTimeout(loadData,1500);
     } catch(err){ errEl.textContent='Failed to submit: '+err.message; errEl.style.display='block'; }
