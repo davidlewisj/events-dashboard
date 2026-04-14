@@ -8,61 +8,80 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #f7f5f2; --surface: #ffffff; --surface-2: #f0ede8;
-      --border: #e5e0d8; --text: #1a1714; --text-muted: #8a8178;
-      --accent: #2d6a7f; --accent-light: #e8f2f5;
-      --pending: #c4622d; --pending-light: #fdf0e8;
-      --approved: #3a7d5a; --approved-light: #eaf4ee;
-      --sick: #b84c6e; --sick-light: #fceef3;
-      --unpaid: #6b6560; --radius: 12px;
-      --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --bg:#f7f5f2; --surface:#fff; --surface-2:#f0ede8; --border:#e5e0d8;
+      --text:#1a1714; --text-muted:#8a8178;
+      --accent:#2d6a7f; --accent-light:#e8f2f5;
+      --pending:#c4622d; --pending-light:#fdf0e8;
+      --approved:#3a7d5a; --approved-light:#eaf4ee;
+      --sick:#b84c6e; --sick-light:#fceef3;
+      --radius:12px;
+      --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-    header { background: var(--accent); color: white; padding: 28px 40px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-    .header-left h1 { font-family: 'DM Serif Display', serif; font-size: 1.8rem; font-weight: 400; letter-spacing: -0.02em; }
-    .header-left p { font-size: 0.85rem; opacity: 0.7; margin-top: 4px; }
-    #last-updated { font-size: 0.78rem; opacity: 0.65; }
-    .refresh-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: white; padding: 7px 16px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; }
-    .refresh-btn:hover { background: rgba(255,255,255,0.25); }
-    main { max-width: 1100px; margin: 0 auto; padding: 32px 24px 64px; }
-    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 32px; }
-    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; box-shadow: var(--shadow); }
-    .stat-card .number { font-family: 'DM Serif Display', serif; font-size: 2.4rem; color: var(--accent); }
-    .stat-card .label { font-size: 0.78rem; color: var(--text-muted); margin-top: 6px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
-    .section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 24px; overflow: hidden; animation: fadeUp 0.4s ease both; }
-    .section:nth-child(1){animation-delay:0.05s} .section:nth-child(2){animation-delay:0.1s} .section:nth-child(3){animation-delay:0.15s} .section:nth-child(4){animation-delay:0.2s}
-    @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-    .section-header { padding: 18px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--surface-2); }
-    .section-header h2 { font-family: 'DM Serif Display', serif; font-size: 1.1rem; font-weight: 400; display: flex; align-items: center; gap: 10px; }
-    .section-header .icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
-    .badge { font-size: 0.72rem; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
-    .badge-pending { background: var(--pending-light); color: var(--pending); }
-    .badge-neutral { background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border); }
-    .event-list { padding: 4px 0; }
-    .event-row { display: grid; grid-template-columns: 1fr 140px 120px 120px; align-items: center; padding: 13px 24px; border-bottom: 1px solid var(--border); transition: background 0.15s; gap: 12px; }
-    .event-row:last-child { border-bottom: none; }
-    .event-row:hover { background: var(--surface-2); }
-    .event-name { font-weight: 500; font-size: 0.9rem; }
-    .event-entity { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
-    .event-dates { font-size: 0.82rem; color: var(--text-muted); }
-    .event-type { font-size: 0.76rem; padding: 3px 10px; border-radius: 20px; font-weight: 500; display: inline-block; }
-    .type-timeoff { background: #e8f2f5; color: #2d6a7f; }
-    .type-sick { background: var(--sick-light); color: var(--sick); }
-    .type-unpaid { background: #f0ede8; color: var(--unpaid); }
-    .type-pending { background: var(--pending-light); color: var(--pending); }
-    .type-other { background: var(--surface-2); color: var(--text-muted); }
-    .status-pill { font-size: 0.75rem; padding: 3px 10px; border-radius: 20px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
-    .status-pending { background: var(--pending-light); color: var(--pending); }
-    .status-approved { background: var(--approved-light); color: var(--approved); }
-    .empty { padding: 36px 24px; text-align: center; color: var(--text-muted); }
-    .empty .empty-icon { font-size: 1.8rem; margin-bottom: 8px; }
-    .empty p { font-size: 0.88rem; }
-    .loading { padding: 36px 24px; text-align: center; color: var(--text-muted); font-size: 0.88rem; }
-    .spinner { width: 22px; height: 22px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 12px; }
-    @keyframes spin { to{transform:rotate(360deg)} }
-    .error-banner { background: #fff3f0; border: 1px solid #ffd4cc; border-radius: var(--radius); padding: 16px 20px; margin-bottom: 24px; font-size: 0.85rem; color: #a33; display: none; }
-    .header-right { display: flex; align-items: center; gap: 12px; }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+    header{background:var(--accent);color:#fff;padding:28px 40px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .header-left h1{font-family:'DM Serif Display',serif;font-size:1.8rem;font-weight:400;letter-spacing:-.02em}
+    .header-left p{font-size:.85rem;opacity:.7;margin-top:4px}
+    .header-right{display:flex;align-items:center;gap:12px}
+    #last-updated{font-size:.78rem;opacity:.65}
+    .refresh-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;padding:7px 16px;border-radius:20px;font-size:.8rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s}
+    .refresh-btn:hover{background:rgba(255,255,255,.25)}
+
+    main{max-width:1100px;margin:0 auto;padding:32px 24px 64px}
+
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:32px}
+    .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;box-shadow:var(--shadow)}
+    .stat-card .number{font-family:'DM Serif Display',serif;font-size:2.4rem;color:var(--accent)}
+    .stat-card .label{font-size:.78rem;color:var(--text-muted);margin-top:6px;font-weight:500;text-transform:uppercase;letter-spacing:.06em}
+
+    .section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:24px;overflow:hidden;animation:fadeUp .4s ease both}
+    .section:nth-child(1){animation-delay:.05s}.section:nth-child(2){animation-delay:.1s}.section:nth-child(3){animation-delay:.15s}.section:nth-child(4){animation-delay:.2s}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+    .section-header{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface-2)}
+    .section-header h2{font-family:'DM Serif Display',serif;font-size:1.1rem;font-weight:400;display:flex;align-items:center;gap:10px}
+    .icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.9rem}
+    .badge{font-size:.72rem;font-weight:600;padding:3px 10px;border-radius:20px}
+    .badge-pending{background:var(--pending-light);color:var(--pending)}
+    .badge-neutral{background:var(--surface-2);color:var(--text-muted);border:1px solid var(--border)}
+
+    .event-list{padding:4px 0}
+    .event-row{display:grid;grid-template-columns:1fr 140px 110px 120px;align-items:center;padding:13px 24px;border-bottom:1px solid var(--border);transition:background .15s;gap:12px}
+    .event-row:last-child{border-bottom:none}
+    .event-row:hover{background:var(--surface-2)}
+    .event-name{font-weight:500;font-size:.9rem}
+    .event-entity{font-size:.78rem;color:var(--text-muted);margin-top:2px}
+    .event-dates{font-size:.82rem;color:var(--text-muted)}
+
+    .event-type{font-size:.76rem;padding:3px 10px;border-radius:20px;font-weight:500;display:inline-block}
+    .type-timeoff{background:#e8f2f5;color:#2d6a7f}
+    .type-sick{background:var(--sick-light);color:var(--sick)}
+    .type-unpaid{background:#f0ede8;color:#6b6560}
+    .type-pending{background:var(--pending-light);color:var(--pending)}
+    .type-birthday{background:#f0eef8;color:#6b4fa8}
+    .type-anniversary{background:#eaf4ee;color:#3a7d5a}
+    .type-firstday{background:#e6f4ec;color:#2d7a4f}
+    .type-holiday{background:#fefae8;color:#8a7020}
+    .type-payday{background:#e8eef8;color:#2d4a7f}
+    .type-other{background:var(--surface-2);color:var(--text-muted)}
+
+    .status-pill{font-size:.75rem;padding:3px 10px;border-radius:20px;font-weight:600;display:inline-flex;align-items:center;gap:4px}
+    .status-pending{background:var(--pending-light);color:var(--pending)}
+    .status-approved{background:var(--approved-light);color:var(--approved)}
+
+    .empty{padding:36px 24px;text-align:center;color:var(--text-muted)}
+    .empty .empty-icon{font-size:1.8rem;margin-bottom:8px}
+    .empty p{font-size:.88rem}
+    .loading{padding:36px 24px;text-align:center;color:var(--text-muted);font-size:.88rem}
+    .spinner{width:22px;height:22px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .error-banner{background:#fff3f0;border:1px solid #ffd4cc;border-radius:var(--radius);padding:16px 20px;margin-bottom:24px;font-size:.85rem;color:#a33;display:none}
+
+    .legend{display:flex;flex-wrap:wrap;gap:8px;padding:16px 24px;border-top:1px solid var(--border);background:var(--surface-2)}
+    .legend-item{display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--text-muted)}
+    .legend-dot{width:10px;height:10px;border-radius:50%}
+
     @media(max-width:640px){
       header{padding:20px;flex-direction:column;align-items:flex-start}
       main{padding:20px 16px 48px}
@@ -72,6 +91,7 @@
   </style>
 </head>
 <body>
+
 <header>
   <div class="header-left">
     <h1>TMJ Team Time Off</h1>
@@ -85,6 +105,7 @@
 
 <main>
   <div class="error-banner" id="error-banner"></div>
+
   <div class="stats">
     <div class="stat-card"><div class="number" id="stat-today">–</div><div class="label">Out Today</div></div>
     <div class="stat-card"><div class="number" id="stat-week">–</div><div class="label">Out This Week</div></div>
@@ -94,7 +115,7 @@
 
   <div class="section">
     <div class="section-header">
-      <h2><span class="icon" style="background:#fdf0e8">⏳</span> Pending Approval</h2>
+      <h2><span class="icon" style="background:#fdf0e8">⏳</span>Pending Approval</h2>
       <span class="badge badge-pending" id="pending-count">0</span>
     </div>
     <div id="pending-list" class="event-list"><div class="loading"><div class="spinner"></div>Loading...</div></div>
@@ -102,7 +123,7 @@
 
   <div class="section">
     <div class="section-header">
-      <h2><span class="icon" style="background:#e8f2f5">📅</span> Out Today</h2>
+      <h2><span class="icon" style="background:#e8f2f5">📅</span>Out Today</h2>
       <span class="badge badge-neutral" id="today-count">0</span>
     </div>
     <div id="today-list" class="event-list"><div class="loading"><div class="spinner"></div>Loading...</div></div>
@@ -110,7 +131,7 @@
 
   <div class="section">
     <div class="section-header">
-      <h2><span class="icon" style="background:#eaf4ee">📆</span> Out This Week</h2>
+      <h2><span class="icon" style="background:#eaf4ee">📆</span>Out This Week</h2>
       <span class="badge badge-neutral" id="week-count">0</span>
     </div>
     <div id="week-list" class="event-list"><div class="loading"><div class="spinner"></div>Loading...</div></div>
@@ -118,139 +139,142 @@
 
   <div class="section">
     <div class="section-header">
-      <h2><span class="icon" style="background:#f5f0ea">🗓</span> Upcoming Time Off <span style="font-family:'DM Sans';font-size:0.8rem;color:var(--text-muted);font-weight:400;margin-left:4px;">(next 30 days)</span></h2>
+      <h2><span class="icon" style="background:#f5f0ea">🗓</span>Upcoming Time Off <span style="font-family:'DM Sans';font-size:.8rem;color:var(--text-muted);font-weight:400;margin-left:4px">(next 30 days)</span></h2>
       <span class="badge badge-neutral" id="upcoming-count">0</span>
     </div>
     <div id="upcoming-list" class="event-list"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#2d6a7f"></div>Time Off</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#b84c6e"></div>Sick</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#6b6560"></div>Unpaid</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#c4622d"></div>Pending</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#6b4fa8"></div>Birthday</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#3a7d5a"></div>Anniversary</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#2d4a7f"></div>Payday</div>
+    </div>
   </div>
 </main>
 
 <script>
-  const API_KEY     = 'YOUR_GOOGLE_CALENDAR_API_KEY';
-  const CALENDAR_ID = 'YOUR_DEST_CALENDAR_ID';
+  // ── Replace with your Cloudflare Worker URL after deploying ──
+  const WORKER_URL = 'https://restless-dust-40de.davidlewisj.workers.dev/';
+
+  const TYPE_LABELS = {
+    timeoff:'Time Off', sick:'Sick', unpaid:'Unpaid', pending:'Pending',
+    birthday:'Birthday', anniversary:'Anniversary', firstday:'First Day',
+    holiday:'Holiday', payday:'Payday', other:'Other'
+  };
 
   function today() { return new Date(new Date().toDateString()); }
   function weekStart() { const d=today(),day=d.getDay(); d.setDate(d.getDate()-(day===0?6:day-1)); return d; }
   function weekEnd()   { const d=weekStart(); d.setDate(d.getDate()+6); d.setHours(23,59,59); return d; }
 
-  function formatDate(s) {
+  function parseD(s) {
+    if (!s) return null;
+    return s.includes('T') ? new Date(s) : new Date(s+'T00:00:00');
+  }
+
+  function fmtDate(s) {
+    const d=parseD(s);
+    if (!d) return '';
+    return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  }
+
+  function fmtRange(e) {
+    const s=e.startDate, en=e.endDate;
     if (!s) return '';
-    return new Date(s+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
-  }
-
-  function formatDateRange(start, end) {
-    const s = start?.date ?? start?.dateTime?.split('T')[0];
-    const e = end?.date ?? end?.dateTime?.split('T')[0];
-    if (!s) return '';
-    const endAdj = new Date(e+'T00:00:00');
-    if (end?.date) endAdj.setDate(endAdj.getDate()-1);
-    const sf = formatDate(s), ef = formatDate(endAdj.toISOString().split('T')[0]);
-    return sf===ef ? sf : sf+' – '+ef;
-  }
-
-  function isTimeOff(s) {
-    if (!s) return false;
-    const l=s.toLowerCase();
-    return l.includes('time off')||l.includes('sick')||l.includes('unpaid')||
-           l.includes('vacation')||l.includes('pto')||l.includes('leave')||l.includes('⏳');
-  }
-
-  function getType(s) {
-    if (!s) return 'other';
-    const l=s.toLowerCase();
-    if (l.includes('⏳')||l.startsWith('pending')) return 'pending';
-    if (l.includes('sick'))   return 'sick';
-    if (l.includes('unpaid')) return 'unpaid';
-    if (l.includes('time off')||l.includes('vacation')||l.includes('pto')||l.includes('leave')) return 'timeoff';
-    return 'other';
-  }
-
-  function getEntity(desc) {
-    if (!desc) return '';
-    const m=desc.match(/Synced from: (.+)/);
-    return m ? m[1].trim() : '';
+    let endAdj = parseD(en);
+    if (e.endIsDate && endAdj) endAdj.setDate(endAdj.getDate()-1);
+    const sf=fmtDate(s), ef=fmtDate(endAdj?.toISOString().split('T')[0]);
+    return sf===ef||!ef ? sf : sf+' – '+ef;
   }
 
   function onDay(e, d) {
-    const s=e.start?.date??e.start?.dateTime?.split('T')[0];
-    const en=e.end?.date??e.end?.dateTime?.split('T')[0];
-    if (!s) return false;
-    const start=new Date(s+'T00:00:00');
-    const end=new Date(en+'T00:00:00');
-    if (e.end?.date) end.setDate(end.getDate()-1);
+    const start=parseD(e.startDate);
+    let end=parseD(e.endDate);
+    if (e.endIsDate && end) end.setDate(end.getDate()-1);
+    if (!start||!end) return false;
     return start<=d&&d<=end;
   }
 
   function inRange(e, from, to) {
-    const s=e.start?.date??e.start?.dateTime?.split('T')[0];
-    const en=e.end?.date??e.end?.dateTime?.split('T')[0];
-    if (!s) return false;
-    const start=new Date(s+'T00:00:00');
-    const end=new Date(en+'T00:00:00');
-    if (e.end?.date) end.setDate(end.getDate()-1);
+    const start=parseD(e.startDate);
+    let end=parseD(e.endDate);
+    if (e.endIsDate && end) end.setDate(end.getDate()-1);
+    if (!start||!end) return false;
     return start<=to&&end>=from;
   }
 
+  function isTimeOff(e) {
+    return ['timeoff','sick','unpaid','pending'].includes(e.type);
+  }
+
   function renderRow(e) {
-    const sum=e.summary??'Time Off';
-    const isPend=sum.includes('⏳');
-    const type=getType(sum);
-    const entity=getEntity(e.description);
-    const dateRange=formatDateRange(e.start,e.end);
-    const cleanName=sum.replace('⏳ ','').replace('Pending ','');
-    const typeLabels={pending:'Pending',sick:'Sick',unpaid:'Unpaid',timeoff:'Time Off',other:'Other'};
-    const statusPill=isPend
+    const statusPill = e.isPending
       ? `<span class="status-pill status-pending">⏳ Pending</span>`
       : `<span class="status-pill status-approved">✓ Approved</span>`;
     return `<div class="event-row">
-      <div><div class="event-name">${cleanName}</div><div class="event-entity">${entity}</div></div>
-      <div class="event-dates">${dateRange}</div>
-      <div><span class="event-type type-${type}">${typeLabels[type]}</span></div>
+      <div>
+        <div class="event-name">${e.summary}</div>
+        <div class="event-entity">${e.entity}</div>
+      </div>
+      <div class="event-dates">${fmtRange(e)}</div>
+      <div><span class="event-type type-${e.type}">${TYPE_LABELS[e.type]??'Other'}</span></div>
       <div>${statusPill}</div>
     </div>`;
   }
 
-  function renderList(id, events, empty) {
-    const el=document.getElementById(id);
-    el.innerHTML = events.length
+  function renderList(id, events, emptyMsg) {
+    document.getElementById(id).innerHTML = events.length
       ? events.map(renderRow).join('')
-      : `<div class="empty"><div class="empty-icon">✓</div><p>${empty}</p></div>`;
+      : `<div class="empty"><div class="empty-icon">✓</div><p>${emptyMsg}</p></div>`;
   }
 
+  function set(id, val) { document.getElementById(id).textContent = val; }
+
   async function loadData() {
-    document.getElementById('last-updated').textContent='Refreshing...';
-    const now=new Date(), future=new Date();
-    future.setDate(now.getDate()+30);
-    const url=`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events?key=${API_KEY}&timeMin=${now.toISOString()}&timeMax=${future.toISOString()}&singleEvents=true&orderBy=startTime&maxResults=500`;
+    set('last-updated','Refreshing...');
     try {
-      const res=await fetch(url);
-      if (!res.ok) throw new Error(`API error ${res.status}`);
-      const data=await res.json();
-      const all=(data.items??[]).filter(e=>isTimeOff(e.summary));
+      const res = await fetch(WORKER_URL);
+      if (!res.ok) throw new Error(`Worker error: ${res.status}`);
+      const { events, updatedAt } = await res.json();
+
+      const now=new Date(), future=new Date();
+      future.setDate(now.getDate()+30);
       const td=today(), ws=weekStart(), we=weekEnd();
-      const pending  = all.filter(e=>e.summary?.includes('⏳'));
-      const todayEvt = all.filter(e=>!e.summary?.includes('⏳')&&onDay(e,td));
-      const weekEvt  = all.filter(e=>!e.summary?.includes('⏳')&&inRange(e,ws,we));
-      const upcoming = all.filter(e=>!e.summary?.includes('⏳'));
-      document.getElementById('stat-today').textContent   = todayEvt.length;
-      document.getElementById('stat-week').textContent    = weekEvt.length;
-      document.getElementById('stat-pending').textContent = pending.length;
-      document.getElementById('stat-upcoming').textContent= upcoming.length;
-      document.getElementById('pending-count').textContent= pending.length;
-      document.getElementById('today-count').textContent  = todayEvt.length;
-      document.getElementById('week-count').textContent   = weekEvt.length;
-      document.getElementById('upcoming-count').textContent=upcoming.length;
+
+      // Filter to time-off relevant events only for main sections
+      const timeOffEvents = events.filter(isTimeOff);
+      const futureEvents  = timeOffEvents.filter(e => parseD(e.startDate) <= future);
+
+      const pending  = futureEvents.filter(e => e.isPending);
+      const todayEvt = futureEvents.filter(e => !e.isPending && onDay(e, td));
+      const weekEvt  = futureEvents.filter(e => !e.isPending && inRange(e, ws, we));
+      const upcoming = futureEvents.filter(e => !e.isPending);
+
+      set('stat-today',    todayEvt.length);
+      set('stat-week',     weekEvt.length);
+      set('stat-pending',  pending.length);
+      set('stat-upcoming', upcoming.length);
+      set('pending-count', pending.length);
+      set('today-count',   todayEvt.length);
+      set('week-count',    weekEvt.length);
+      set('upcoming-count',upcoming.length);
+
       renderList('pending-list',  pending,  'No pending requests — all clear ✓');
       renderList('today-list',    todayEvt, 'Nobody out today ✓');
       renderList('week-list',     weekEvt,  'Nobody out this week ✓');
       renderList('upcoming-list', upcoming, 'No upcoming time off in the next 30 days');
-      document.getElementById('last-updated').textContent='Updated '+new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+
+      const t = new Date(updatedAt);
+      set('last-updated','Updated '+t.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}));
       document.getElementById('error-banner').style.display='none';
+
     } catch(err) {
       const b=document.getElementById('error-banner');
       b.style.display='block';
-      b.textContent=`Could not load calendar data: ${err.message}. Check your API key and Calendar ID.`;
-      document.getElementById('last-updated').textContent='Failed to load';
+      b.textContent=`Could not load data: ${err.message}`;
+      set('last-updated','Failed to load');
     }
   }
 
