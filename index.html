@@ -374,7 +374,7 @@
                 <div>
                   <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:4px">Return time</div>
                   <select id="req-return-time">
-<option value="no-return">Won't return this day</option>
+<option value="eod">EOD</option>
 <option value="06:00">6:00 AM</option>
 <option value="06:30">6:30 AM</option>
 <option value="07:00">7:00 AM</option>
@@ -614,7 +614,16 @@
     for(let d=1;d<=days;d++){
       const isToday=td.getFullYear()===calYear&&td.getMonth()===calMonth&&td.getDate()===d;
       const target=new Date(calYear,calMonth,d);
-      const evts=allEvents.filter(e=>notPayday(e)&&!e.isPending&&onDay(e,target));
+      const evts=allEvents.filter(e=>{
+        if(!notPayday(e)) return false;
+        const s=parseD(e.startDate);
+        if(!s) return false;
+        // For events with no endDate or same-day, just check startDate
+        let en=parseD(e.endDate);
+        if(!en) return s.toDateString()===target.toDateString();
+        if(e.endIsDate) en.setDate(en.getDate()-1);
+        return s<=target&&target<=en;
+      });
       const dots=evts.slice(0,3).map(e=>`<span class="cal-dot" style="background:${TYPE_COLORS[e.type]??'#8a8178'}"></span>`).join('');
       if (evts.length) {
         const tooltipHtml = evts.map(e=>`<div class="cal-tooltip-item"><span class="cal-tooltip-dot" style="background:${TYPE_COLORS[e.type]??'#8a8178'}"></span>${cleanSummary(e.summary)}</div>`).join('');
@@ -879,8 +888,8 @@
       const depart = document.getElementById('req-depart-time').value;
       const ret    = document.getElementById('req-return-time').value;
       const fmtT = v => { const [h,m]=v.split(':'); const h12=h>12?h-12:h==0?12:parseInt(h); return `${h12}:${m} ${h>=12?'PM':'AM'}`; };
-      timeNote = ret === 'no-return'
-        ? `Partial day — departing at ${fmtT(depart)}, not returning`
+      timeNote = ret === 'eod'
+        ? `Partial day — departing at ${fmtT(depart)}, returning EOD`
         : `Partial day — departing at ${fmtT(depart)}, returning at ${fmtT(ret)}`;
     } else {
       start = document.getElementById('req-start').value;
@@ -904,9 +913,13 @@
 
     try {
       const fullNotes = timeNote ? `${timeNote}${notes ? '\n'+notes : ''}` : notes;
+      // For partial days, append time range to leave type for the calendar title
+      const displayLeaveType = timeNote
+        ? leaveType + ' ' + timeNote.replace('Partial day — ','(Partial Day) ').replace('departing at ','').replace(', returning at ',' - ').replace(', returning EOD',' - EOD')
+        : leaveType;
       const res = await fetch(`${WORKER_URL}/request`, {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ name, email, role, startDate:start, endDate:end, leaveType, coveragePlan:coverage, notes:fullNotes })
+        body: JSON.stringify({ name, email, role, startDate:start, endDate:end, leaveType:displayLeaveType, coveragePlan:coverage, notes:fullNotes, isPartial: isPartial })
       });
       const data = await res.json();
       if (!data.success) throw new Error(data.error);
