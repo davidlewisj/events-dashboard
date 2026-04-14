@@ -773,18 +773,16 @@
     filterMyRequests();
   }
 
-  // Only lock email from autofill if user manually types in the field
-  // Reset the lock if they clear it completely
+  // Only lock autofill if user actually presses a key in the email field
   document.addEventListener('DOMContentLoaded', () => {
     const emailEl = document.getElementById('req-email');
     if (emailEl) {
-      emailEl.addEventListener('input', () => {
-        // If they've cleared the field, allow autofill again
-        emailManuallyEdited = emailEl.value.length > 0;
+      emailEl.addEventListener('keydown', () => {
+        emailManuallyEdited = true;
       });
-      emailEl.addEventListener('focus', () => {
-        // Track if this is a manual edit vs autofill
-        emailEl.dataset.focused = 'true';
+      // If they clear the field completely, re-enable autofill
+      emailEl.addEventListener('input', () => {
+        if (emailEl.value === '') emailManuallyEdited = false;
       });
     }
   });
@@ -846,33 +844,6 @@
     }).join('');
 
     openDrawer();
-    el.innerHTML = `
-      <div class="history-row history-header"><div>Request</div><div>Dates</div><div>Type</div><div>Status</div></div>
-      ${mine.map(e=>{
-        const timeline = `<div style="display:flex;align-items:center;gap:0;font-size:.7rem">
-          <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
-            <div style="width:18px;height:18px;border-radius:50%;background:var(--approved);display:flex;align-items:center;justify-content:center">
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <span style="color:var(--approved);font-weight:600">Submitted</span>
-          </div>
-          <div style="height:2px;width:16px;background:${e.isPending?'var(--border)':'var(--approved)'}"></div>
-          <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
-            <div style="width:18px;height:18px;border-radius:50%;background:${e.isPending?'var(--pending)':'var(--approved)'};display:flex;align-items:center;justify-content:center">
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">${e.isPending?'<circle cx="5" cy="5" r="2" fill="#fff"/>':'<polyline points="2,5 4,7 8,3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>'}</svg>
-            </div>
-            <span style="color:${e.isPending?'var(--pending)':'var(--approved)'};font-weight:600">${e.isPending?'In Review':'Approved'}</span>
-          </div>
-          ${!e.isPending?`<div style="height:2px;width:16px;background:var(--approved)"></div>
-          <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
-            <div style="width:18px;height:18px;border-radius:50%;background:var(--approved);display:flex;align-items:center;justify-content:center">
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <span style="color:var(--approved);font-weight:600">Approved</span>
-          </div>`:''}
-        </div>`;
-        return `<div class="my-request-row"><div class="event-name">${cleanSummary(e.summary)}</div><div class="event-dates">${fmtRange(e)}</div><div><span class="etype type-${e.type}">${TYPE_LABELS[e.type]??'Other'}</span></div><div>${timeline}</div></div>`;
-      }).join('')}`;
   }
 
   // ── MANAGER EVENT ROW ─────────────────────────────────────────────────────
