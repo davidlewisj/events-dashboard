@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TMJ Team Time Off</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <title>Team Time-Off Dashboard — Manager</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg:#f7f5f2; --surface:#fff; --surface-2:#f0ede8; --border:#e5e0d8;
       --text:#1a1714; --text-muted:#8a8178;
-      --accent:#2d6a7f; --accent-light:#e8f2f5;
+      --accent:#2d6a7f;
       --pending:#c4622d; --pending-light:#fdf0e8;
       --approved:#3a7d5a; --approved-light:#eaf4ee;
+      --denied:#a33; --denied-light:#fff0f0;
       --sick:#b84c6e; --sick-light:#fceef3;
       --radius:12px;
       --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
@@ -20,25 +20,38 @@
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 
-    header{background:var(--accent);color:#fff;padding:28px 40px;display:flex;align-items:center;justify-content:space-between;gap:16px}
-    .header-left h1{font-family:'DM Serif Display',serif;font-size:1.8rem;font-weight:400;letter-spacing:-.02em}
-    .header-left p{font-size:.85rem;opacity:.7;margin-top:4px}
+    /* PASSWORD GATE */
+    #gate{position:fixed;inset:0;background:var(--accent);display:flex;align-items:center;justify-content:center;z-index:999}
+    .gate-box{background:#fff;border-radius:var(--radius);padding:40px;width:340px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.2)}
+    .gate-box h2{font-family:'DM Serif Display',serif;font-size:1.6rem;font-weight:400;margin-bottom:6px}
+    .gate-box p{font-size:.85rem;color:var(--text-muted);margin-bottom:24px}
+    .gate-box input{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:.95rem;font-family:'DM Sans',sans-serif;margin-bottom:12px;outline:none}
+    .gate-box input:focus{border-color:var(--accent)}
+    .gate-box button{width:100%;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:.95rem;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500}
+    .gate-box button:hover{opacity:.9}
+    .gate-error{color:#a33;font-size:.82rem;margin-top:8px;display:none}
+
+    /* HEADER */
+    header{background:var(--accent);color:#fff;padding:24px 40px;display:flex;align-items:center;justify-content:space-between}
+    .header-left h1{font-family:'DM Serif Display',serif;font-size:1.7rem;font-weight:400;letter-spacing:-.02em}
+    .header-left .tag{display:inline-block;background:rgba(255,255,255,.2);font-size:.72rem;padding:2px 10px;border-radius:20px;margin-top:6px;letter-spacing:.05em;font-weight:500}
     .header-right{display:flex;align-items:center;gap:12px}
     #last-updated{font-size:.78rem;opacity:.65}
-    .refresh-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;padding:7px 16px;border-radius:20px;font-size:.8rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s}
+    .refresh-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;padding:7px 16px;border-radius:20px;font-size:.8rem;cursor:pointer;font-family:'DM Sans',sans-serif}
     .refresh-btn:hover{background:rgba(255,255,255,.25)}
 
     main{max-width:1100px;margin:0 auto;padding:32px 24px 64px}
 
+    /* STATS */
     .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:32px}
     .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;box-shadow:var(--shadow)}
     .stat-card .number{font-family:'DM Serif Display',serif;font-size:2.4rem;color:var(--accent)}
     .stat-card .label{font-size:.78rem;color:var(--text-muted);margin-top:6px;font-weight:500;text-transform:uppercase;letter-spacing:.06em}
 
+    /* SECTIONS */
     .section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:24px;overflow:hidden;animation:fadeUp .4s ease both}
     .section:nth-child(1){animation-delay:.05s}.section:nth-child(2){animation-delay:.1s}.section:nth-child(3){animation-delay:.15s}.section:nth-child(4){animation-delay:.2s}
     @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-
     .section-header{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface-2)}
     .section-header h2{font-family:'DM Serif Display',serif;font-size:1.1rem;font-weight:400;display:flex;align-items:center;gap:10px}
     .icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.9rem}
@@ -46,14 +59,13 @@
     .badge-pending{background:var(--pending-light);color:var(--pending)}
     .badge-neutral{background:var(--surface-2);color:var(--text-muted);border:1px solid var(--border)}
 
+    /* EVENT ROWS */
     .event-list{padding:4px 0}
-    .event-row{display:grid;grid-template-columns:1fr 140px 110px 120px;align-items:center;padding:13px 24px;border-bottom:1px solid var(--border);transition:background .15s;gap:12px}
+    .event-row{display:grid;grid-template-columns:1fr 140px 110px auto;align-items:center;padding:13px 24px;border-bottom:1px solid var(--border);transition:background .15s;gap:12px}
     .event-row:last-child{border-bottom:none}
     .event-row:hover{background:var(--surface-2)}
     .event-name{font-weight:500;font-size:.9rem}
-    .event-entity{font-size:.78rem;color:var(--text-muted);margin-top:2px}
     .event-dates{font-size:.82rem;color:var(--text-muted)}
-
     .event-type{font-size:.76rem;padding:3px 10px;border-radius:20px;font-weight:500;display:inline-block}
     .type-timeoff{background:#e8f2f5;color:#2d6a7f}
     .type-sick{background:var(--sick-light);color:var(--sick)}
@@ -63,39 +75,59 @@
     .type-anniversary{background:#eaf4ee;color:#3a7d5a}
     .type-firstday{background:#e6f4ec;color:#2d7a4f}
     .type-holiday{background:#fefae8;color:#8a7020}
-    .type-payday{background:#e8eef8;color:#2d4a7f}
     .type-other{background:var(--surface-2);color:var(--text-muted)}
 
     .status-pill{font-size:.75rem;padding:3px 10px;border-radius:20px;font-weight:600;display:inline-flex;align-items:center;gap:4px}
     .status-pending{background:var(--pending-light);color:var(--pending)}
     .status-approved{background:var(--approved-light);color:var(--approved)}
 
+    /* APPROVE/DENY BUTTONS */
+    .action-btns{display:flex;gap:8px;align-items:center}
+    .btn-approve{background:var(--approved-light);color:var(--approved);border:1px solid #b8dfc9;padding:5px 14px;border-radius:20px;font-size:.78rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+    .btn-approve:hover{background:var(--approved);color:#fff}
+    .btn-deny{background:var(--denied-light);color:var(--denied);border:1px solid #ffccc9;padding:5px 14px;border-radius:20px;font-size:.78rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+    .btn-deny:hover{background:var(--denied);color:#fff}
+
+    /* COVERAGE PLAN */
+    .coverage-note{font-size:.75rem;color:var(--text-muted);margin-top:3px;font-style:italic}
+
+    /* EMPTY / LOADING */
     .empty{padding:36px 24px;text-align:center;color:var(--text-muted)}
     .empty .empty-icon{font-size:1.8rem;margin-bottom:8px}
     .empty p{font-size:.88rem}
     .loading{padding:36px 24px;text-align:center;color:var(--text-muted);font-size:.88rem}
     .spinner{width:22px;height:22px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
     @keyframes spin{to{transform:rotate(360deg)}}
-    .error-banner{background:#fff3f0;border:1px solid #ffd4cc;border-radius:var(--radius);padding:16px 20px;margin-bottom:24px;font-size:.85rem;color:#a33;display:none}
 
-    .legend{display:flex;flex-wrap:wrap;gap:8px;padding:16px 24px;border-top:1px solid var(--border);background:var(--surface-2)}
-    .legend-item{display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--text-muted)}
-    .legend-dot{width:10px;height:10px;border-radius:50%}
+    .error-banner{background:#fff3f0;border:1px solid #ffd4cc;border-radius:var(--radius);padding:16px 20px;margin-bottom:24px;font-size:.85rem;color:#a33;display:none}
+    .toast{position:fixed;bottom:24px;right:24px;background:#1a1714;color:#fff;padding:12px 20px;border-radius:10px;font-size:.85rem;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999}
+    .toast.show{opacity:1}
 
     @media(max-width:640px){
       header{padding:20px;flex-direction:column;align-items:flex-start}
       main{padding:20px 16px 48px}
-      .event-row{grid-template-columns:1fr 90px}
+      .event-row{grid-template-columns:1fr auto}
       .event-dates,.event-type{display:none}
     }
   </style>
 </head>
 <body>
 
+<!-- PASSWORD GATE -->
+<div id="gate">
+  <div class="gate-box">
+    <h2>Manager Access</h2>
+    <p>Team Time-Off Dashboard</p>
+    <input type="password" id="pw-input" placeholder="Enter password" onkeydown="if(event.key==='Enter')checkPassword()" />
+    <button onclick="checkPassword()">Sign In</button>
+    <div class="gate-error" id="gate-error">Incorrect password. Try again.</div>
+  </div>
+</div>
+
 <header>
   <div class="header-left">
-    <h1>TMJ Team Time Off</h1>
-    <p>Center · Creekside · SMS · Solutions</p>
+    <h1>Team Time-Off Dashboard</h1>
+    <div class="tag">MANAGER VIEW</div>
   </div>
   <div class="header-right">
     <span id="last-updated"></span>
@@ -113,6 +145,7 @@
     <div class="stat-card"><div class="number" id="stat-upcoming">–</div><div class="label">Upcoming (30 days)</div></div>
   </div>
 
+  <!-- Pending -->
   <div class="section">
     <div class="section-header">
       <h2><span class="icon" style="background:#fdf0e8">⏳</span>Pending Approval</h2>
@@ -121,6 +154,7 @@
     <div id="pending-list" class="event-list"><div class="loading"><div class="spinner"></div>Loading...</div></div>
   </div>
 
+  <!-- Today -->
   <div class="section">
     <div class="section-header">
       <h2><span class="icon" style="background:#e8f2f5">📅</span>Out Today</h2>
@@ -129,6 +163,7 @@
     <div id="today-list" class="event-list"><div class="loading"><div class="spinner"></div>Loading...</div></div>
   </div>
 
+  <!-- This Week -->
   <div class="section">
     <div class="section-header">
       <h2><span class="icon" style="background:#eaf4ee">📆</span>Out This Week</h2>
@@ -137,120 +172,175 @@
     <div id="week-list" class="event-list"><div class="loading"><div class="spinner"></div>Loading...</div></div>
   </div>
 
+  <!-- Upcoming -->
   <div class="section">
     <div class="section-header">
-      <h2><span class="icon" style="background:#f5f0ea">🗓</span>Upcoming Time Off <span style="font-family:'DM Sans';font-size:.8rem;color:var(--text-muted);font-weight:400;margin-left:4px">(next 30 days)</span></h2>
+      <h2><span class="icon" style="background:#f5f0ea">🗓</span>Upcoming Events <span style="font-family:'DM Sans';font-size:.8rem;color:var(--text-muted);font-weight:400;margin-left:4px">(next 30 days)</span></h2>
       <span class="badge badge-neutral" id="upcoming-count">0</span>
     </div>
     <div id="upcoming-list" class="event-list"><div class="loading"><div class="spinner"></div>Loading...</div></div>
-    <div class="legend">
-      <div class="legend-item"><div class="legend-dot" style="background:#2d6a7f"></div>Time Off</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#b84c6e"></div>Sick</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#6b6560"></div>Unpaid</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#c4622d"></div>Pending</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#6b4fa8"></div>Birthday</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#3a7d5a"></div>Anniversary</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#2d4a7f"></div>Payday</div>
-    </div>
   </div>
 </main>
 
+<div class="toast" id="toast"></div>
+
 <script>
-  // ── Replace with your Cloudflare Worker URL after deploying ──
-  const WORKER_URL = 'https://restless-dust-40de.davidlewisj.workers.dev/';
+  const WORKER_URL = 'https://restless-dust-40de.davidlewisj.workers.dev';
+  let managerPassword = '';
+  let allEvents = [];
 
-  const TYPE_LABELS = {
-    timeoff:'Time Off', sick:'Sick', unpaid:'Unpaid', pending:'Pending',
-    birthday:'Birthday', anniversary:'Anniversary', firstday:'First Day',
-    holiday:'Holiday', payday:'Payday', other:'Other'
-  };
-
-  function today() { return new Date(new Date().toDateString()); }
-  function weekStart() { const d=today(),day=d.getDay(); d.setDate(d.getDate()-(day===0?6:day-1)); return d; }
-  function weekEnd()   { const d=weekStart(); d.setDate(d.getDate()+6); d.setHours(23,59,59); return d; }
-
-  function parseD(s) {
-    if (!s) return null;
-    return s.includes('T') ? new Date(s) : new Date(s+'T00:00:00');
+  // ── PASSWORD ────────────────────────────────────────────────────────────────
+  function checkPassword() {
+    const pw = document.getElementById('pw-input').value;
+    // We verify by attempting an approve with a dummy ID — if 401 it's wrong
+    // For simplicity we just store and verify server-side on each action
+    if (!pw) return;
+    managerPassword = pw;
+    document.getElementById('gate').style.display = 'none';
+    loadData();
   }
 
+  // ── HELPERS ─────────────────────────────────────────────────────────────────
+  function today()     { return new Date(new Date().toDateString()); }
+  function weekStart() { const d=today(),day=d.getDay(); d.setDate(d.getDate()-(day===0?6:day-1)); return d; }
+  function weekEnd()   { const d=weekStart(); d.setDate(d.getDate()+6); d.setHours(23,59,59); return d; }
+  function parseD(s)   { if(!s)return null; return s.includes('T')?new Date(s):new Date(s+'T00:00:00'); }
+
   function fmtDate(s) {
-    const d=parseD(s);
-    if (!d) return '';
+    const d=parseD(s); if(!d)return '';
     return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
   }
 
   function fmtRange(e) {
-    const s=e.startDate, en=e.endDate;
-    if (!s) return '';
-    let endAdj = parseD(en);
-    if (e.endIsDate && endAdj) endAdj.setDate(endAdj.getDate()-1);
+    const s=e.startDate, en=e.endDate; if(!s)return '';
+    let endAdj=parseD(en);
+    if(e.endIsDate&&endAdj) endAdj.setDate(endAdj.getDate()-1);
     const sf=fmtDate(s), ef=fmtDate(endAdj?.toISOString().split('T')[0]);
-    return sf===ef||!ef ? sf : sf+' – '+ef;
+    return sf===ef||!ef?sf:sf+' – '+ef;
   }
 
-  function onDay(e, d) {
-    const start=parseD(e.startDate);
-    let end=parseD(e.endDate);
-    if (e.endIsDate && end) end.setDate(end.getDate()-1);
-    if (!start||!end) return false;
-    return start<=d&&d<=end;
+  function onDay(e,d)   { const s=parseD(e.startDate);let en=parseD(e.endDate);if(e.endIsDate&&en)en.setDate(en.getDate()-1);if(!s||!en)return false;return s<=d&&d<=en; }
+  function inRange(e,f,t){ const s=parseD(e.startDate);let en=parseD(e.endDate);if(e.endIsDate&&en)en.setDate(en.getDate()-1);if(!s||!en)return false;return s<=t&&en>=f; }
+  function isTimeOff(e)  { return ['timeoff','sick','unpaid','pending'].includes(e.type); }
+  function isUpcoming(e) { return e.type!=='payday'; }
+
+  const TYPE_LABELS={timeoff:'Time Off',sick:'Sick',unpaid:'Unpaid',pending:'Pending',birthday:'Birthday',anniversary:'Anniversary',firstday:'First Day',holiday:'Holiday',other:'Other'};
+
+  function showToast(msg, duration=3000) {
+    const t=document.getElementById('toast');
+    t.textContent=msg; t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), duration);
   }
 
-  function inRange(e, from, to) {
-    const start=parseD(e.startDate);
-    let end=parseD(e.endDate);
-    if (e.endIsDate && end) end.setDate(end.getDate()-1);
-    if (!start||!end) return false;
-    return start<=to&&end>=from;
-  }
+  function set(id,val){ document.getElementById(id).textContent=val; }
 
-  function isTimeOff(e) {
-    return ['timeoff','sick','unpaid','pending'].includes(e.type);
-  }
-
-  function renderRow(e) {
+  // ── RENDER ──────────────────────────────────────────────────────────────────
+  function renderRow(e, showActions=false) {
+    const dateRange = fmtRange(e);
+    const typeLabel = TYPE_LABELS[e.type]??'Other';
     const statusPill = e.isPending
       ? `<span class="status-pill status-pending">⏳ Pending</span>`
       : `<span class="status-pill status-approved">✓ Approved</span>`;
+
+    const actionCol = showActions && e.isPending && e.isProviderRequest
+      ? `<div class="action-btns">
+          <button class="btn-approve" onclick="approveEvent('${e.uid}')">Approve</button>
+          <button class="btn-deny" onclick="denyEvent('${e.uid}')">Deny</button>
+        </div>`
+      : statusPill;
+
+    const coverageNote = e.coveragePlan
+      ? `<div class="coverage-note">Coverage: ${e.coveragePlan}</div>`
+      : '';
+
     return `<div class="event-row">
       <div>
         <div class="event-name">${e.summary}</div>
-        <div class="event-entity">${e.entity}</div>
+        ${coverageNote}
       </div>
-      <div class="event-dates">${fmtRange(e)}</div>
-      <div><span class="event-type type-${e.type}">${TYPE_LABELS[e.type]??'Other'}</span></div>
-      <div>${statusPill}</div>
+      <div class="event-dates">${dateRange}</div>
+      <div><span class="event-type type-${e.type}">${typeLabel}</span></div>
+      <div>${actionCol}</div>
     </div>`;
   }
 
-  function renderList(id, events, emptyMsg) {
+  function renderList(id, events, emptyMsg, showActions=false) {
     document.getElementById(id).innerHTML = events.length
-      ? events.map(renderRow).join('')
+      ? events.map(e=>renderRow(e,showActions)).join('')
       : `<div class="empty"><div class="empty-icon">✓</div><p>${emptyMsg}</p></div>`;
   }
 
-  function set(id, val) { document.getElementById(id).textContent = val; }
+  // ── APPROVE / DENY ──────────────────────────────────────────────────────────
+  async function approveEvent(uid) {
+    // Find event by uid to get its Google Calendar event ID
+    const event = allEvents.find(e => e.uid === uid);
+    if (!event) return showToast('Event not found');
 
+    // Extract Google Calendar event ID from uid (iCal uid format varies)
+    // We stored uid which for Google Calendar iCal exports is the event ID + @google.com
+    const eventId = uid.split('@')[0];
+
+    try {
+      const res = await fetch(`${WORKER_URL}/approve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ eventId, password: managerPassword }),
+      });
+      const data = await res.json();
+      if (data.error === 'Unauthorized') {
+        showToast('❌ Incorrect password');
+        document.getElementById('gate').style.display='flex';
+        return;
+      }
+      if (!data.success) throw new Error(data.error);
+      showToast('✓ Request approved');
+      setTimeout(loadData, 1000);
+    } catch(err) {
+      showToast('Error: ' + err.message);
+    }
+  }
+
+  async function denyEvent(uid) {
+    if (!confirm('Deny this time-off request?')) return;
+    const eventId = uid.split('@')[0];
+    try {
+      const res = await fetch(`${WORKER_URL}/deny`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ eventId, password: managerPassword }),
+      });
+      const data = await res.json();
+      if (data.error === 'Unauthorized') {
+        showToast('❌ Incorrect password');
+        document.getElementById('gate').style.display='flex';
+        return;
+      }
+      if (!data.success) throw new Error(data.error);
+      showToast('Request denied and removed');
+      setTimeout(loadData, 1000);
+    } catch(err) {
+      showToast('Error: ' + err.message);
+    }
+  }
+
+  // ── LOAD DATA ───────────────────────────────────────────────────────────────
   async function loadData() {
     set('last-updated','Refreshing...');
     try {
-      const res = await fetch(WORKER_URL);
+      const res = await fetch(`${WORKER_URL}/`);
       if (!res.ok) throw new Error(`Worker error: ${res.status}`);
       const { events, updatedAt } = await res.json();
+      allEvents = events;
 
       const now=new Date(), future=new Date();
       future.setDate(now.getDate()+30);
       const td=today(), ws=weekStart(), we=weekEnd();
 
-      // Filter to time-off relevant events only for main sections
-      const timeOffEvents = events.filter(isTimeOff);
-      const futureEvents  = timeOffEvents.filter(e => parseD(e.startDate) <= future);
-
-      const pending  = futureEvents.filter(e => e.isPending);
-      const todayEvt = futureEvents.filter(e => !e.isPending && onDay(e, td));
-      const weekEvt  = futureEvents.filter(e => !e.isPending && inRange(e, ws, we));
-      const upcoming = futureEvents.filter(e => !e.isPending);
+      const timeOffEvents = events.filter(isTimeOff).filter(e=>parseD(e.startDate)<=future);
+      const pending  = timeOffEvents.filter(e=>e.isPending);
+      const todayEvt = timeOffEvents.filter(e=>!e.isPending&&onDay(e,td));
+      const weekEvt  = timeOffEvents.filter(e=>!e.isPending&&inRange(e,ws,we));
+      const upcoming = events.filter(isUpcoming).filter(e=>!e.isPending&&parseD(e.startDate)<=future);
 
       set('stat-today',    todayEvt.length);
       set('stat-week',     weekEvt.length);
@@ -261,24 +351,22 @@
       set('week-count',    weekEvt.length);
       set('upcoming-count',upcoming.length);
 
-      renderList('pending-list',  pending,  'No pending requests — all clear ✓');
+      renderList('pending-list',  pending,  'No pending requests ✓', true);
       renderList('today-list',    todayEvt, 'Nobody out today ✓');
       renderList('week-list',     weekEvt,  'Nobody out this week ✓');
-      renderList('upcoming-list', upcoming, 'No upcoming time off in the next 30 days');
+      renderList('upcoming-list', upcoming, 'No upcoming events in the next 30 days');
 
-      const t = new Date(updatedAt);
+      const t=new Date(updatedAt);
       set('last-updated','Updated '+t.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}));
       document.getElementById('error-banner').style.display='none';
 
     } catch(err) {
-      const b=document.getElementById('error-banner');
-      b.style.display='block';
-      b.textContent=`Could not load data: ${err.message}`;
+      document.getElementById('error-banner').style.display='block';
+      document.getElementById('error-banner').textContent=`Could not load data: ${err.message}`;
       set('last-updated','Failed to load');
     }
   }
 
-  loadData();
   setInterval(loadData, 15*60*1000);
 </script>
 </body>
