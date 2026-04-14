@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232d6a7f'/%3E%3Crect x='6' y='8' width='20' height='17' rx='3' fill='none' stroke='%23fff' stroke-width='2'/%3E%3Cline x1='10' y1='6' x2='10' y2='11' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='22' y1='6' x2='22' y2='11' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='6' y1='15' x2='26' y2='15' stroke='%23fff' stroke-width='1.5'/%3E%3Ccircle cx='11' cy='20' r='1.5' fill='%23fff'/%3E%3Ccircle cx='16' cy='20' r='1.5' fill='%23fff'/%3E%3Ccircle cx='21' cy='20' r='1.5' fill='%23fff'/%3E%3C/svg%3E" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Team Time-Off Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -16,6 +17,23 @@
       --sick:#b84c6e; --sick-light:#fceef3;
       --radius:12px;
       --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
+    }
+    @media(prefers-color-scheme:dark){
+      :root{
+        --bg:#1a1c1e; --surface:#242729; --surface-2:#2d3033; --border:#3a3d42;
+        --text:#f0ede8; --text-muted:#9a9490; --text-light:#6b6560;
+        --accent:#4a9ab8;
+        --pending-light:#2d1a0e; --approved-light:#0e2018;
+        --denied-light:#2d0e0e; --sick-light:#2d0e1a;
+        --shadow:0 1px 3px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.2);
+      }
+      header{background:#1d4a5c}
+      .switcher button.active{color:#1d4a5c}
+      .gate-box,.modal-box{background:#242729;color:#f0ede8}
+      .gate-box input,.modal-box textarea,.field input,.field select,.field textarea,.manager-notes{background:#2d3033;color:#f0ede8;border-color:#3a3d42}
+      .tab-btn.active{background:#2d3033;color:#f0ede8}
+      .btn-approve:hover:not(:disabled){background:#3a7d5a}
+      .btn-deny:hover{background:#a33}
     }
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
@@ -51,17 +69,29 @@
     /* STATS */
     .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:28px}
     .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 22px;box-shadow:var(--shadow)}
-    .stat-card .number{font-family:'DM Serif Display',serif;font-size:2.2rem;color:var(--accent)}
+    .stat-card .number{font-family:'DM Serif Display',serif;font-size:2.2rem;color:var(--accent);transition:transform .2s}
     .stat-card .label{font-size:.75rem;color:var(--text-muted);margin-top:5px;font-weight:500;text-transform:uppercase;letter-spacing:.06em}
+    .stat-card{cursor:default;transition:box-shadow .2s,transform .2s}
+    .stat-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.1);transform:translateY(-2px)}
+    @keyframes countUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .stat-card .number.animate{animation:countUp .4s ease both}
 
     /* TABS (manager) */
     .tab-bar{display:flex;gap:2px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:3px;margin-bottom:24px;width:fit-content}
     .tab-btn{border:none;background:transparent;padding:7px 20px;border-radius:8px;font-size:.85rem;font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--text-muted);font-weight:500;transition:all .2s}
     .tab-btn.active{background:#fff;color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.08);font-weight:600}
+    .tab-view{animation:tabFadeIn .25s ease both}
+    @keyframes tabFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
     /* SECTIONS */
     .section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:20px;overflow:hidden}
-    .section-header{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface-2)}
+    .stat-card.expandable{cursor:pointer}
+    .stat-card.expandable:hover .label::after{content:' ▾';font-size:.6rem}
+    .stat-mini-list{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);display:none}
+    .stat-mini-list.open{display:block}
+    .stat-mini-item{font-size:.78rem;color:var(--text);padding:3px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between}
+    .stat-mini-item:last-child{border-bottom:none}
+    .section-header{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface-2);position:sticky;top:0;z-index:10}
     .section-header h2{font-family:'DM Serif Display',serif;font-size:1.05rem;font-weight:400;display:flex;align-items:center;gap:10px}
     .s-icon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.85rem}
     .badge{font-size:.7rem;font-weight:600;padding:2px 9px;border-radius:20px}
@@ -69,8 +99,10 @@
     .badge-neutral{background:var(--surface-2);color:var(--text-muted);border:1px solid var(--border)}
 
     /* REQUEST CARDS (manager pending) */
-    .request-card{border-bottom:1px solid var(--border);overflow:hidden}
+    .request-card{border-bottom:1px solid var(--border);overflow:hidden;transition:opacity .3s,transform .3s,max-height .4s}
     .request-card:last-child{border-bottom:none}
+    .request-card.approving{opacity:0;transform:translateX(20px)}
+    .request-card.denying{opacity:0;transform:translateX(-20px)}
     .request-summary{display:grid;grid-template-columns:1fr 130px 110px 110px auto;align-items:center;padding:14px 22px;gap:12px;cursor:pointer;transition:background .15s}
     .request-summary:hover{background:var(--surface-2)}
     .req-name{font-weight:600;font-size:.9rem}
@@ -163,6 +195,8 @@
     .submit-btn{width:100%;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:.9rem;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500;margin-top:4px}
     .submit-btn:hover{opacity:.9}
     .submit-btn:disabled{opacity:.5;cursor:not-allowed}
+    @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+    .field input.invalid,.field select.invalid,.field textarea.invalid{border-color:#c4622d!important;animation:shake .35s ease}
     .form-success{display:none;padding:14px;background:var(--approved-light);border:1px solid #b8dfc9;border-radius:8px;text-align:center;font-size:.85rem;color:var(--approved);margin-top:12px}
     .form-error-msg{display:none;padding:10px;background:#fff0f0;border:1px solid #ffccc9;border-radius:8px;font-size:.82rem;color:#a33;margin-top:10px}
 
@@ -200,9 +234,9 @@
     .cal-tooltip-item:last-child{border-bottom:none}
 
     /* SHARED */
-    .empty{padding:32px 22px;text-align:center;color:var(--text-muted)}
-    .empty .ei{font-size:1.6rem;margin-bottom:8px}
-    .empty p{font-size:.85rem}
+    .empty{padding:36px 22px;text-align:center;color:var(--text-muted)}
+    .empty .ei{margin:0 auto 14px;display:block}
+    .empty p{font-size:.85rem;margin-top:4px}
     .loading{padding:32px;text-align:center;color:var(--text-muted);font-size:.85rem}
     .spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px}
     @keyframes spin{to{transform:rotate(360deg)}}
@@ -434,8 +468,16 @@
 
     <!-- Stats -->
     <div class="stats">
-      <div class="stat-card"><div class="number" id="m-stat-pending">–</div><div class="label">Pending Review</div></div>
-      <div class="stat-card"><div class="number" id="m-stat-today">–</div><div class="label">Out Today</div></div>
+      <div class="stat-card expandable" onclick="toggleStatCard('pending-mini')">
+        <div class="number" id="m-stat-pending">–</div>
+        <div class="label">Pending Review</div>
+        <div class="stat-mini-list" id="pending-mini"></div>
+      </div>
+      <div class="stat-card expandable" onclick="toggleStatCard('today-mini')">
+        <div class="number" id="m-stat-today">–</div>
+        <div class="label">Out Today</div>
+        <div class="stat-mini-list" id="today-mini"></div>
+      </div>
       <div class="stat-card"><div class="number" id="m-stat-week">–</div><div class="label">Out This Week</div></div>
       <div class="stat-card"><div class="number" id="m-stat-upcoming">–</div><div class="label">Upcoming (30d)</div></div>
     </div>
@@ -544,7 +586,9 @@
 
   function switchManagerTab(tab) {
     ['pending','upcoming','history'].forEach(t => {
-      document.getElementById(`mtab-view-${t}`).style.display = t === tab ? 'block' : 'none';
+      const el = document.getElementById(`mtab-view-${t}`);
+      el.style.display = t === tab ? 'block' : 'none';
+      if (t === tab) { el.classList.remove('tab-view'); void el.offsetWidth; el.classList.add('tab-view'); }
       document.getElementById(`mtab-${t}`).classList.toggle('active', t === tab);
     });
     if (tab === 'history') renderHistory();
@@ -597,8 +641,32 @@
   function inRange(e,f,t){ const s=parseD(e.startDate);let en=parseD(e.endDate);if(e.endIsDate&&en)en.setDate(en.getDate()-1);if(!s||!en)return false;return s<=t&&en>=f; }
   function isTimeOff(e)  { return ['timeoff','sick','unpaid','pending'].includes(e.type); }
   function notPayday(e)  { return e.type!=='payday'; }
+
+  function initials(name) {
+    const parts = name.trim().split(' ').filter(Boolean);
+    if (parts.length >= 2) return (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
+    return parts[0]?.substring(0,2).toUpperCase() || '?';
+  }
+
+  function avatarColor(name) {
+    const colors = ['#2d6a7f','#3a7d5a','#b84c6e','#6b4fa8','#c4622d','#8a7020','#2d4a7f'];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    return colors[Math.abs(hash) % colors.length];
+  }
   function cleanSummary(s){ return (s||'').replace(/^(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])\s*/g,'').trim(); }
-  function set(id,val)   { const el=document.getElementById(id);if(el)el.textContent=val; }
+  function set(id, val) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const prev = parseInt(el.textContent);
+    const next = parseInt(val);
+    if (!isNaN(prev) && !isNaN(next) && prev !== next) {
+      el.classList.remove('animate');
+      void el.offsetWidth; // reflow
+      el.classList.add('animate');
+    }
+    el.textContent = val;
+  }
   function showToast(msg){ const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500); }
 
   // ── CALENDAR ─────────────────────────────────────────────────────────────
@@ -626,8 +694,11 @@
       });
       const dots=evts.slice(0,3).map(e=>`<span class="cal-dot" style="background:${TYPE_COLORS[e.type]??'#8a8178'}"></span>`).join('');
       if (evts.length) {
+        const hasPending = evts.some(e=>e.isPending);
+        const hasTimeOff = evts.some(e=>['timeoff','sick','unpaid'].includes(e.type));
+        const bgTint = hasPending ? 'background:rgba(196,98,45,.07)' : hasTimeOff ? 'background:rgba(45,106,127,.07)' : '';
         const tooltipHtml = evts.map(e=>`<div class="cal-tooltip-item"><span class="cal-tooltip-dot" style="background:${TYPE_COLORS[e.type]??'#8a8178'}"></span>${cleanSummary(e.summary)}</div>`).join('');
-        html+=`<div class="cal-day${isToday?' today':''} has-event" style="cursor:pointer" onmouseenter="showCalTooltip(event,'${encodeURIComponent(tooltipHtml)}')" onmouseleave="hideCalTooltip()"><span>${d}</span><div style="display:flex;gap:2px;flex-wrap:wrap;justify-content:center">${dots}</div></div>`;
+        html+=`<div class="cal-day${isToday?' today':''} has-event" style="cursor:pointer;${bgTint}" onmouseenter="showCalTooltip(event,'${encodeURIComponent(tooltipHtml)}')" onmouseleave="hideCalTooltip()"><span>${d}</span><div style="display:flex;gap:2px;flex-wrap:wrap;justify-content:center">${dots}</div></div>`;
       } else {
         html+=`<div class="cal-day${isToday?' today':''}"><span>${d}</span></div>`;
       }
@@ -653,10 +724,29 @@
     el.innerHTML = `
       <div class="history-row history-header"><div>Request</div><div>Dates</div><div>Type</div><div>Status</div></div>
       ${mine.map(e=>{
-        const status = e.isPending
-          ? `<span style="background:var(--pending-light);color:var(--pending);padding:2px 9px;border-radius:20px;font-size:.75rem;font-weight:600">⏳ Pending</span>`
-          : `<span class="approved-pill">✓ Approved</span>`;
-        return `<div class="my-request-row"><div class="event-name">${cleanSummary(e.summary)}</div><div class="event-dates">${fmtRange(e)}</div><div><span class="etype type-${e.type}">${TYPE_LABELS[e.type]??'Other'}</span></div><div>${status}</div></div>`;
+        const timeline = `<div style="display:flex;align-items:center;gap:0;font-size:.7rem">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+            <div style="width:18px;height:18px;border-radius:50%;background:var(--approved);display:flex;align-items:center;justify-content:center">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span style="color:var(--approved);font-weight:600">Submitted</span>
+          </div>
+          <div style="height:2px;width:16px;background:${e.isPending?'var(--border)':'var(--approved)'}"></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+            <div style="width:18px;height:18px;border-radius:50%;background:${e.isPending?'var(--pending)':'var(--approved)'};display:flex;align-items:center;justify-content:center">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">${e.isPending?'<circle cx="5" cy="5" r="2" fill="#fff"/>':'<polyline points="2,5 4,7 8,3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>'}</svg>
+            </div>
+            <span style="color:${e.isPending?'var(--pending)':'var(--approved)'};font-weight:600">${e.isPending?'In Review':'Approved'}</span>
+          </div>
+          ${!e.isPending?`<div style="height:2px;width:16px;background:var(--approved)"></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+            <div style="width:18px;height:18px;border-radius:50%;background:var(--approved);display:flex;align-items:center;justify-content:center">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span style="color:var(--approved);font-weight:600">Approved</span>
+          </div>`:''}
+        </div>`;
+        return `<div class="my-request-row"><div class="event-name">${cleanSummary(e.summary)}</div><div class="event-dates">${fmtRange(e)}</div><div><span class="etype type-${e.type}">${TYPE_LABELS[e.type]??'Other'}</span></div><div>${timeline}</div></div>`;
       }).join('')}`;
   }
 
@@ -668,7 +758,7 @@
   function renderList(id, events, emptyMsg, fn) {
     document.getElementById(id).innerHTML = events.length
       ? events.map(fn).join('')
-      : `<div class="empty"><div class="ei">✓</div><p>${emptyMsg}</p></div>`;
+      : `<div class="empty">${emptyStateSVG()}<p>${emptyMsg}</p></div>`;
   }
 
   // ── CHECKLIST BUILDER ────────────────────────────────────────────────────────
@@ -733,8 +823,13 @@
         <div class="request-card">
           <div class="request-summary" onclick="toggleCard(${i})">
             <div>
-              <div class="req-name">${name.substring(0,60)}</div>
-              <div class="req-role">${role}${email?' · '+email:''}</div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <div style="width:34px;height:34px;border-radius:50%;background:${avatarColor(name)};display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:600;color:#fff;flex-shrink:0">${initials(name)}</div>
+                <div>
+                  <div class="req-name">${name.substring(0,60)}</div>
+                  <div class="req-role">${role}${email?' · '+email:''}</div>
+                </div>
+              </div>
             </div>
             <div class="req-dates">${fmtRange(e)}</div>
             <div><span class="etype type-${e.type}">${leaveType||TYPE_LABELS[e.type]}</span></div>
@@ -839,8 +934,11 @@
       const data = await res.json();
       if (data.error==='Unauthorized') { showToast('❌ Incorrect password'); document.getElementById('gate').classList.add('show'); return; }
       if (!data.success) throw new Error(data.error);
+      // Animate card out before reloading
+      const card = document.querySelector(`[onclick*="approveEvent('${uid}"]`)?.closest('.request-card');
+      if (card) { card.classList.add('approving'); setTimeout(loadData, 400); }
+      else setTimeout(loadData, 1200);
       showToast('✓ Request approved — calendar updated');
-      setTimeout(loadData, 1200);
     } catch(err) { showToast('Error: '+err.message); }
   }
 
@@ -871,7 +969,7 @@
       if (!data.success) throw new Error(data.error);
       closeDenyModal();
       showToast('Request denied — email sent to staff member');
-      setTimeout(loadData, 1200);
+      setTimeout(loadData, 400);
     } catch(err) { showToast('Error: '+err.message); }
   }
 
@@ -901,12 +999,17 @@
     const errEl    = document.getElementById('form-error');
     errEl.style.display='none';
 
-    if (!name)  { errEl.textContent='Please enter your name.'; errEl.style.display='block'; return; }
-    if (!email) { errEl.textContent='Please enter your email.'; errEl.style.display='block'; return; }
-    if (!role)  { errEl.textContent='Please select your role.'; errEl.style.display='block'; return; }
-    if (!start) { errEl.textContent='Please select a start date.'; errEl.style.display='block'; return; }
-    if (!end)   { errEl.textContent='Please select an end date.'; errEl.style.display='block'; return; }
-    if (end<start){ errEl.textContent='End date must be on or after start date.'; errEl.style.display='block'; return; }
+    function invalidate(id, msg) {
+      const el = document.getElementById(id);
+      if (el) { el.classList.add('invalid'); setTimeout(()=>el.classList.remove('invalid'), 600); }
+      errEl.textContent = msg; errEl.style.display = 'block';
+    }
+    if (!name)  { invalidate('req-name','Please enter your name.'); return; }
+    if (!email) { invalidate('req-email','Please enter your email address.'); return; }
+    if (!role)  { invalidate('req-role','Please select your role.'); return; }
+    if (!start) { invalidate(isPartial?'req-partial-date':'req-start','Please select a date.'); return; }
+    if (!isPartial && !end) { invalidate('req-end','Please select an end date.'); return; }
+    if (!isPartial && end<start){ invalidate('req-end','End date must be on or after start date.'); return; }
 
     const btn=document.getElementById('submit-btn');
     btn.disabled=true; btn.textContent='Submitting...';
@@ -937,6 +1040,31 @@
   }
 
   // ── LOAD DATA ─────────────────────────────────────────────────────────────
+  function emptyStateSVG() {
+    return `<svg class="ei" width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="26" cy="26" r="24" stroke="var(--border)" stroke-width="1.5"/>
+      <circle cx="26" cy="26" r="18" fill="var(--surface-2)"/>
+      <polyline points="18,26 23,31 34,20" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>`;
+  }
+
+  function toggleStatCard(miniId) {
+    const mini = document.getElementById(miniId);
+    if (!mini) return;
+    mini.classList.toggle('open');
+  }
+
+  function populateStatMinis(pendingEvts, todayEvts) {
+    const pm = document.getElementById('pending-mini');
+    const tm = document.getElementById('today-mini');
+    if (pm) pm.innerHTML = pendingEvts.slice(0,5).map(e=>
+      `<div class="stat-mini-item"><span>${cleanSummary(e.summary).split(' - ')[0]}</span><span style="color:var(--pending);font-size:.7rem">⏳ Pending</span></div>`
+    ).join('') || '<div style="font-size:.78rem;color:var(--text-muted);padding:4px 0">None pending</div>';
+    if (tm) tm.innerHTML = todayEvts.slice(0,5).map(e=>
+      `<div class="stat-mini-item"><span>${cleanSummary(e.summary)}</span><span style="color:var(--approved);font-size:.7rem">Out</span></div>`
+    ).join('') || '<div style="font-size:.78rem;color:var(--text-muted);padding:4px 0">All in today</div>';
+  }
+
   async function loadData() {
     set('last-updated','Refreshing...');
     try {
@@ -961,6 +1089,7 @@
       set('m-stat-pending', pending.length);
       set('m-pending-count', pending.length);
       renderPendingCards(pending);
+      populateStatMinis(pending, todayEvt);
 
       // Manager upcoming
       const timeOffEvents = events.filter(isTimeOff).filter(e=>!e.isPending&&parseD(e.startDate)<=future);
