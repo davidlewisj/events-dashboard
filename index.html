@@ -1267,6 +1267,12 @@
     const name     = document.getElementById('req-name').value.trim();
     const email    = document.getElementById('req-email').value.trim();
     const role     = document.getElementById('req-role').value;
+    console.log('DEBUG submit:', {
+      name, email, role,
+      csRoleVal: document.getElementById('cs-role-val')?.textContent,
+      nativeRoleValue: document.getElementById('req-role')?.value,
+      nativeRoleOptions: Array.from(document.getElementById('req-role')?.options||[]).map(o=>o.value)
+    });
     const isPartial = document.getElementById('dur-partial').checked;
     let start, end, timeNote = '';
     if (isPartial) {
@@ -1295,7 +1301,12 @@
     }
     if (!name)  { invalidate('req-name','Please enter your name.'); return; }
     if (!email) { invalidate('req-email','Please enter your email address.'); return; }
-    if (!role)  { invalidate('req-role','Please select your role.'); return; }
+    // Check custom select display value as fallback since native may be empty
+    const roleDisplay = document.getElementById('cs-role-val')?.textContent || '';
+    const effectiveRole = role || (roleDisplay && roleDisplay !== 'Select role...' ? roleDisplay : '');
+    if (!effectiveRole) { invalidate('req-role','Please select your role.'); return; }
+    // Use effectiveRole going forward
+    const finalRole = effectiveRole;
     if (!start) { invalidate(isPartial?'req-partial-date':'req-start','Please select a date.'); return; }
     if (!isPartial && !end) { invalidate('req-end','Please select an end date.'); return; }
     if (!isPartial && end<start){ invalidate('req-end','End date must be on or after start date.'); return; }
@@ -1311,7 +1322,7 @@
         : leaveType;
       const res = await fetch(`${WORKER_URL}/request`, {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ name, email, role, startDate:start, endDate:end, leaveType:displayLeaveType, coveragePlan:coverage, notes:fullNotes, isPartial: isPartial })
+        body: JSON.stringify({ name, email, role: finalRole, startDate:start, endDate:end, leaveType:displayLeaveType, coveragePlan:coverage, notes:fullNotes, isPartial: isPartial })
       });
       const data = await res.json();
       if (!data.success) throw new Error(data.error);
@@ -1534,8 +1545,20 @@
       valEl.textContent = 'Select role...';
       valEl.className = 'cs-placeholder';
     }
-    // Update native select for form submission
-    if (native) native.value = value ?? label ?? '';
+    // Update native select - ensure the option exists or create it
+    if (native) {
+      const v = value ?? label ?? '';
+      // Try setting value directly first
+      native.value = v;
+      // If it didn't take (no matching option), add one
+      if (native.value !== v) {
+        const opt = document.createElement('option');
+        opt.value = v;
+        opt.text = label;
+        native.add(opt);
+        native.value = v;
+      }
+    }
     // Update selected styling
     document.querySelectorAll(`#${csId}-dropdown .cs-option`).forEach(opt => opt.classList.remove('selected'));
     event.currentTarget.classList.add('selected');
