@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232d6a7f'/%3E%3Crect x='6' y='8' width='20' height='17' rx='3' fill='none' stroke='%23fff' stroke-width='2'/%3E%3Cline x1='10' y1='6' x2='10' y2='11' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='22' y1='6' x2='22' y2='11' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='6' y1='15' x2='26' y2='15' stroke='%23fff' stroke-width='1.5'/%3E%3Ccircle cx='11' cy='20' r='1.5' fill='%23fff'/%3E%3Ccircle cx='16' cy='20' r='1.5' fill='%23fff'/%3E%3Ccircle cx='21' cy='20' r='1.5' fill='%23fff'/%3E%3C/svg%3E" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Team Time-Off Dashboard</title>
+  <title>Team Schedule</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -61,7 +61,7 @@
     .gate-box{background:#fff;border-radius:var(--radius);padding:40px;width:340px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.2)}
     .gate-box h2{font-family:'DM Serif Display',serif;font-size:1.5rem;font-weight:400;margin-bottom:6px}
     .gate-box p{font-size:.85rem;color:var(--text-muted);margin-bottom:24px}
-    .gate-box input{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:.9rem;font-family:'DM Sans',sans-serif;margin-bottom:12px;outline:none}
+    .gate-box input{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:.9rem;font-family:'DM Sans',sans-serif;margin-bottom:12px;outline:none;transition:border .2s}
     .gate-box input:focus{border-color:var(--accent)}
     .gate-btn{width:100%;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:.9rem;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500}
     .gate-error{color:#a33;font-size:.82rem;margin-top:8px;display:none}
@@ -126,7 +126,8 @@
     .check-item input[type=checkbox]{width:16px;height:16px;accent-color:var(--approved);cursor:pointer;flex-shrink:0}
     .check-item span{font-size:.85rem;font-weight:500}
     .check-item.checked span{color:var(--approved)}
-    .manager-notes{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:.88rem;font-family:'DM Sans',sans-serif;resize:vertical;min-height:70px;outline:none;margin-bottom:16px}
+    .manager-notes{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:.88rem;font-family:'DM Sans',sans-serif;resize:vertical;min-height:70px;outline:none;margin-bottom:16px;transition:border .2s;color:var(--text);background:var(--surface)}
+    .manager-notes::placeholder{color:var(--text-light);font-family:'DM Sans',sans-serif}
     .manager-notes:focus{border-color:var(--accent)}
     .card-actions{display:flex;gap:10px;align-items:center}
     .btn-approve{background:var(--approved-light);color:var(--approved);border:1px solid #b8dfc9;padding:8px 20px;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
@@ -142,7 +143,8 @@
     .modal-box{background:#fff;border-radius:var(--radius);padding:32px;width:420px;box-shadow:0 8px 40px rgba(0,0,0,.2)}
     .modal-box h3{font-family:'DM Serif Display',serif;font-size:1.3rem;font-weight:400;margin-bottom:8px}
     .modal-box p{font-size:.85rem;color:var(--text-muted);margin-bottom:16px}
-    .modal-box textarea{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:.88rem;font-family:'DM Sans',sans-serif;resize:vertical;min-height:90px;outline:none;margin-bottom:16px}
+    .modal-box textarea{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:.88rem;font-family:'DM Sans',sans-serif;resize:vertical;min-height:90px;outline:none;margin-bottom:16px;transition:border .2s;color:var(--text);background:var(--surface)}
+    .modal-box textarea::placeholder{color:var(--text-light)}
     .modal-box textarea:focus{border-color:var(--accent)}
     .modal-actions{display:flex;gap:10px;justify-content:flex-end}
     .btn-cancel{background:var(--surface-2);border:1px solid var(--border);padding:8px 18px;border-radius:8px;font-size:.85rem;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text-muted)}
@@ -150,7 +152,9 @@
 
     /* HISTORY TABLE */
     .history-filters{display:flex;gap:10px;padding:16px 22px;border-bottom:1px solid var(--border);background:var(--surface-2);flex-wrap:wrap}
-    .history-filters select,.history-filters input{padding:7px 12px;border:1px solid var(--border);border-radius:8px;font-size:.82rem;font-family:'DM Sans',sans-serif;background:#fff;outline:none}
+    .history-filters select,.history-filters input{padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:.82rem;font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);outline:none;transition:border .2s}
+    .history-filters input::placeholder{color:var(--text-light);font-family:'DM Sans',sans-serif}
+    .history-filters select{padding-right:28px}
     .history-filters select:focus,.history-filters input:focus{border-color:var(--accent)}
     .history-row{display:grid;grid-template-columns:1fr 110px 130px 100px 120px;align-items:center;padding:12px 22px;border-bottom:1px solid var(--border);gap:12px;font-size:.85rem}
     .history-row:last-child{border-bottom:none}
@@ -161,9 +165,10 @@
     /* EVENT ROWS (simple) */
     .event-list{padding:4px 0}
     .list-filter{display:flex;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border);background:var(--surface-2);flex-wrap:wrap;align-items:center}
-    .list-filter input{flex:1;min-width:120px;padding:6px 10px;border:1px solid var(--border);border-radius:7px;font-size:.8rem;font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);outline:none}
+    .list-filter input{flex:1;min-width:120px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:.8rem;font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);outline:none;transition:border .2s}
+    .list-filter input::placeholder{color:var(--text-light);font-family:'DM Sans',sans-serif}
     .list-filter input:focus{border-color:var(--accent)}
-    .list-filter select{padding:6px 10px;border:1px solid var(--border);border-radius:7px;font-size:.8rem;font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);outline:none}
+    .list-filter select{padding:7px 28px 7px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:.8rem;font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);outline:none;transition:border .2s}
     .list-filter select:focus{border-color:var(--accent)}
     .filter-count{font-size:.75rem;color:var(--text-muted);margin-left:auto;white-space:nowrap}
     .event-row{display:grid;grid-template-columns:1fr 140px 110px;align-items:center;padding:12px 22px;border-bottom:1px solid var(--border);gap:12px}
@@ -202,8 +207,51 @@
     .form-body{padding:22px}
     .field{margin-bottom:16px}
     .field label{display:block;font-size:.75rem;font-weight:600;color:var(--text-muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
-    .field input,.field select,.field textarea{width:100%;padding:9px 13px;border:1px solid var(--border);border-radius:8px;font-size:.88rem;font-family:'DM Sans',sans-serif;background:#fff;color:var(--text);outline:none;transition:border .2s}
+    .field input,.field select,.field textarea{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:.88rem;font-family:'DM Sans',sans-serif;background-color:var(--surface);color:var(--text);outline:none;transition:border .2s,box-shadow .2s;line-height:1.4}
+    .field input::placeholder,.field textarea::placeholder{color:var(--text-light);font-family:'DM Sans',sans-serif}
+
+    /* ── Custom Select ── */
+    .custom-select{position:relative;width:100%}
+    .custom-select-trigger{width:100%;padding:10px 36px 10px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:.88rem;font-family:'DM Sans',sans-serif;background-color:var(--surface);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none;transition:border .2s;line-height:1.4}
+    .custom-select-trigger:hover{border-color:var(--accent)}
+    .custom-select-trigger.open{border-color:var(--accent);border-bottom-left-radius:4px;border-bottom-right-radius:4px}
+    .custom-select-trigger .cs-chevron{width:14px;height:14px;flex-shrink:0;transition:transform .2s;color:var(--text-muted)}
+    .custom-select-trigger.open .cs-chevron{transform:rotate(180deg)}
+    .custom-select-trigger .cs-value{color:var(--text)}
+    .custom-select-trigger .cs-placeholder{color:var(--text-light)}
+    .custom-select-dropdown{position:fixed;background:var(--surface);border:1px solid var(--accent);border-radius:var(--radius);box-shadow:0 4px 20px rgba(0,0,0,.12);z-index:9999;overflow:hidden;display:none;animation:csDown .15s ease}
+    .custom-select-dropdown.open{display:block}
+    @keyframes csDown{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+    .cs-option{padding:9px 14px;font-size:.88rem;font-family:'DM Sans',sans-serif;color:var(--text);cursor:pointer;transition:background .12s}
+    .cs-option:hover{background:var(--accent-light,#e8f2f5);color:var(--accent)}
+    .cs-option.selected{background:var(--accent);color:#fff;font-weight:500}
+    .cs-option.placeholder-opt{color:var(--text-muted)}
+
+    /* ── Custom Date Picker ── */
+    .custom-date-wrap{position:relative;width:100%}
+    .custom-date-trigger{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:.88rem;font-family:'DM Sans',sans-serif;background-color:var(--surface);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none;transition:border .2s;line-height:1.4}
+    .custom-date-trigger:hover{border-color:var(--accent)}
+    .custom-date-trigger.open{border-color:var(--accent)}
+    .custom-date-trigger .cd-placeholder{color:var(--text-light)}
+    .custom-date-popup{position:fixed;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 20px rgba(0,0,0,.12);z-index:9999;width:260px;padding:12px;display:none;animation:csDown .15s ease}
+    .custom-date-popup.open{display:block}
+    .cd-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+    .cd-nav-btn{background:none;border:1px solid var(--border);border-radius:8px;width:28px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-family:'DM Sans',sans-serif}
+    .cd-nav-btn:hover{background:var(--surface-2);border-color:var(--accent);color:var(--accent)}
+    .cd-month-label{font-size:.88rem;font-weight:600;color:var(--text)}
+    .cd-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+    .cd-header{text-align:center;font-size:.68rem;font-weight:600;color:var(--text-muted);padding:4px 0;text-transform:uppercase;letter-spacing:.04em}
+    .cd-cell{text-align:center;padding:5px 2px;border-radius:6px;font-size:.82rem;cursor:pointer;color:var(--text);transition:background .1s}
+    .cd-cell:hover{background:var(--surface-2)}
+    .cd-cell.today{color:var(--accent);font-weight:700}
+    .cd-cell.selected{background:var(--accent);color:#fff;font-weight:600}
+    .cd-cell.other-month{color:var(--text-light)}
+    .cd-cell.in-range{background:rgba(45,106,127,.1)}
+    .field select{appearance:none;-webkit-appearance:none;background-color:var(--surface);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a8178' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer}
     .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
+    .field select:hover{border-color:var(--accent)}
+    .list-filter select{appearance:none;-webkit-appearance:none;background-color:var(--surface);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%238a8178' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;cursor:pointer}
+    .history-filters select{appearance:none;-webkit-appearance:none;background-color:var(--surface);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%238a8178' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;cursor:pointer}
     .field textarea{resize:vertical;min-height:70px}
     .date-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     .submit-btn{width:100%;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:.9rem;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500;margin-top:4px}
@@ -270,7 +318,7 @@
 <div id="gate">
   <div class="gate-box">
     <h2>Manager Access</h2>
-    <p>Team Time-Off Dashboard</p>
+    <p>Team Schedule</p>
     <input type="password" id="pw-input" placeholder="Enter password" onkeydown="if(event.key==='Enter')checkPassword()" />
     <button class="gate-btn" onclick="checkPassword()">Sign In</button>
     <div class="gate-error" id="gate-error">Incorrect password. Try again.</div>
@@ -293,7 +341,7 @@
 <!-- HEADER -->
 <header>
   <div class="header-left">
-    <h1>Team Time-Off Dashboard</h1>
+    <h1>Team Schedule</h1>
     <div class="switcher">
       <button id="btn-staff" onclick="switchView('staff')" class="active">Staff</button>
       <button id="btn-manager" onclick="switchView('manager')">Manager</button>
@@ -341,16 +389,23 @@
           </div>
           <div class="list-filter">
             <input type="text" id="s-filter-search" placeholder="Search name..." oninput="filterUpcoming('staff')" />
-            <select id="s-filter-type" onchange="filterUpcoming('staff')">
-              <option value="">All Types</option>
-              <option value="timeoff">Time Off</option>
-              <option value="sick">Sick</option>
-              <option value="unpaid">Unpaid</option>
-              <option value="birthday">Birthday</option>
-              <option value="anniversary">Anniversary</option>
-              <option value="firstday">First Day</option>
-              <option value="holiday">Holiday</option>
-            </select>
+            <select id="s-filter-type" style="display:none" onchange="filterUpcoming('staff')"></select>
+            <div class="custom-select" id="cs-s-type" style="width:130px;flex-shrink:0">
+              <div class="custom-select-trigger" onclick="csToggle('cs-s-type')" id="cs-s-type-trigger" style="padding:7px 28px 7px 10px;font-size:.8rem">
+                <span id="cs-s-type-val" class="cs-value">All Types</span>
+                <svg class="cs-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              <div class="custom-select-dropdown" id="cs-s-type-dropdown">
+                <div class="cs-option selected" onclick="csFilterSelect('cs-s-type','All Types','s-filter-type','','staff')">All Types</div>
+                <div class="cs-option" onclick="csFilterSelect('cs-s-type','Time Off','s-filter-type','timeoff','staff')">Time Off</div>
+                <div class="cs-option" onclick="csFilterSelect('cs-s-type','Sick','s-filter-type','sick','staff')">Sick</div>
+                <div class="cs-option" onclick="csFilterSelect('cs-s-type','Unpaid','s-filter-type','unpaid','staff')">Unpaid</div>
+                <div class="cs-option" onclick="csFilterSelect('cs-s-type','Birthday','s-filter-type','birthday','staff')">Birthday</div>
+                <div class="cs-option" onclick="csFilterSelect('cs-s-type','Anniversary','s-filter-type','anniversary','staff')">Anniversary</div>
+                <div class="cs-option" onclick="csFilterSelect('cs-s-type','First Day','s-filter-type','firstday','staff')">First Day</div>
+                <div class="cs-option" onclick="csFilterSelect('cs-s-type','Holiday','s-filter-type','holiday','staff')">Holiday</div>
+              </div>
+            </div>
             <span class="filter-count" id="s-filter-count"></span>
           </div>
           <div id="s-upcoming-list" class="event-list"><div class="loading"><div class="spinner"></div>Loading...</div></div>
@@ -378,16 +433,23 @@
           </div>
           <div class="field"><label>Email</label><input type="email" id="req-email" placeholder="jane@tmjsleep.com" /></div>
           <div class="field"><label>Role</label>
-            <select id="req-role">
-              <option value="">Select role...</option>
-              <option>Provider</option>
-              <option>Dental Assistant</option>
-              <option>Patient Care Coordinator</option>
-              <option>Treatment Coordinator</option>
-              <option>Billing</option>
-              <option>Management</option>
-              <option>Medical Assistant</option>
-            </select>
+            <select id="req-role" style="display:none"></select>
+            <div class="custom-select" id="cs-role">
+              <div class="custom-select-trigger" onclick="csToggle('cs-role')" id="cs-role-trigger">
+                <span class="cs-placeholder" id="cs-role-val">Select role...</span>
+                <svg class="cs-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              <div class="custom-select-dropdown" id="cs-role-dropdown">
+                <div class="cs-option placeholder-opt" onclick="csSelect('cs-role','','req-role')">Select role...</div>
+                <div class="cs-option" onclick="csSelect('cs-role','Provider','req-role')">Provider</div>
+                <div class="cs-option" onclick="csSelect('cs-role','Dental Assistant','req-role')">Dental Assistant</div>
+                <div class="cs-option" onclick="csSelect('cs-role','Patient Care Coordinator','req-role')">Patient Care Coordinator</div>
+                <div class="cs-option" onclick="csSelect('cs-role','Treatment Coordinator','req-role')">Treatment Coordinator</div>
+                <div class="cs-option" onclick="csSelect('cs-role','Billing','req-role')">Billing</div>
+                <div class="cs-option" onclick="csSelect('cs-role','Management','req-role')">Management</div>
+                <div class="cs-option" onclick="csSelect('cs-role','Medical Assistant','req-role')">Medical Assistant</div>
+              </div>
+            </div>
           </div>
           <div class="field">
             <label>Duration</label>
@@ -407,11 +469,39 @@
               <div class="date-row">
                 <div>
                   <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:4px">From</div>
-                  <input type="date" id="req-start" />
+                  <input type="date" id="req-start" style="display:none" />
+                  <div class="custom-date-wrap" id="cdw-start">
+                    <div class="custom-date-trigger" onclick="cdToggle('cdw-start')" id="cdw-start-trigger">
+                      <span id="cdw-start-val">Select date</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted)"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    </div>
+                    <div class="custom-date-popup" id="cdw-start-popup">
+                      <div class="cd-nav">
+                        <button class="cd-nav-btn" onclick="cdPrevMonth('cdw-start')">‹</button>
+                        <span class="cd-month-label" id="cdw-start-month"></span>
+                        <button class="cd-nav-btn" onclick="cdNextMonth('cdw-start')">›</button>
+                      </div>
+                      <div class="cd-grid" id="cdw-start-grid"></div>
+                    </div>
+                  </div>
                 </div>
                 <div>
                   <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:4px">To</div>
-                  <input type="date" id="req-end" />
+                  <input type="date" id="req-end" style="display:none" />
+                  <div class="custom-date-wrap" id="cdw-end">
+                    <div class="custom-date-trigger" onclick="cdToggle('cdw-end')" id="cdw-end-trigger">
+                      <span id="cdw-end-val">Select date</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted)"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    </div>
+                    <div class="custom-date-popup" id="cdw-end-popup">
+                      <div class="cd-nav">
+                        <button class="cd-nav-btn" onclick="cdPrevMonth('cdw-end')">‹</button>
+                        <span class="cd-month-label" id="cdw-end-month"></span>
+                        <button class="cd-nav-btn" onclick="cdNextMonth('cdw-end')">›</button>
+                      </div>
+                      <div class="cd-grid" id="cdw-end-grid"></div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -419,11 +509,32 @@
             <!-- Partial day fields -->
             <div id="partial-day-fields" style="display:none">
               <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:4px">Date</div>
-              <input type="date" id="req-partial-date" style="width:100%;margin-bottom:12px" />
+              <input type="date" id="req-partial-date" style="display:none" />
+              <div class="custom-date-wrap" id="cdw-partial" style="margin-bottom:12px">
+                <div class="custom-date-trigger" onclick="cdToggle('cdw-partial')" id="cdw-partial-trigger">
+                  <span id="cdw-partial-val">Select date</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted)"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </div>
+                <div class="custom-date-popup" id="cdw-partial-popup">
+                  <div class="cd-nav">
+                    <button class="cd-nav-btn" onclick="cdPrevMonth('cdw-partial')">‹</button>
+                    <span class="cd-month-label" id="cdw-partial-month"></span>
+                    <button class="cd-nav-btn" onclick="cdNextMonth('cdw-partial')">›</button>
+                  </div>
+                  <div class="cd-grid" id="cdw-partial-grid"></div>
+                </div>
+              </div>
               <div class="date-row">
                 <div>
                   <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:4px">Departure time</div>
-                  <select id="req-depart-time">
+                  <div class="custom-select" id="cs-depart" style="margin-bottom:0">
+                  <div class="custom-select-trigger" onclick="csToggle('cs-depart')" id="cs-depart-trigger" style="padding:8px 32px 8px 12px;font-size:.85rem">
+                    <span id="cs-depart-val" class="cs-value">8:00 AM</span>
+                    <svg class="cs-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </div>
+                  <div class="custom-select-dropdown" id="cs-depart-dropdown" style="max-height:180px;overflow-y:auto"></div>
+                </div>
+                <select id="req-depart-time" style="display:none">
 <option value="06:00">6:00 AM</option>
 <option value="06:30">6:30 AM</option>
 <option value="07:00">7:00 AM</option>
@@ -458,7 +569,14 @@
                 </div>
                 <div>
                   <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:4px">Return time</div>
-                  <select id="req-return-time">
+                  <div class="custom-select" id="cs-return" style="margin-bottom:0">
+                  <div class="custom-select-trigger" onclick="csToggle('cs-return')" id="cs-return-trigger" style="padding:8px 32px 8px 12px;font-size:.85rem">
+                    <span id="cs-return-val" class="cs-value">EOD</span>
+                    <svg class="cs-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </div>
+                  <div class="custom-select-dropdown" id="cs-return-dropdown" style="max-height:180px;overflow-y:auto"></div>
+                </div>
+                <select id="req-return-time" style="display:none">
 <option value="eod">EOD</option>
 <option value="06:00">6:00 AM</option>
 <option value="06:30">6:30 AM</option>
@@ -496,13 +614,24 @@
             </div>
           </div>
           <div class="field"><label>Leave Type</label>
-            <select id="req-type">
+            <select id="req-type" style="display:none">
               <option value="PTO">PTO</option>
               <option value="Sick Time">Sick Time</option>
               <option value="Unpaid Time Off">Unpaid Time Off</option>
             </select>
+            <div class="custom-select" id="cs-leavetype">
+              <div class="custom-select-trigger" onclick="csToggle('cs-leavetype')" id="cs-leavetype-trigger">
+                <span class="cs-value" id="cs-leavetype-val">PTO</span>
+                <svg class="cs-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              <div class="custom-select-dropdown" id="cs-leavetype-dropdown">
+                <div class="cs-option selected" onclick="csSelect('cs-leavetype','PTO','req-type','PTO')">PTO</div>
+                <div class="cs-option" onclick="csSelect('cs-leavetype','Sick Time','req-type','Sick Time')">Sick Time</div>
+                <div class="cs-option" onclick="csSelect('cs-leavetype','Unpaid Time Off','req-type','Unpaid Time Off')">Unpaid Time Off</div>
+              </div>
+            </div>
           </div>
-          <div class="field"><label>Coverage Plan</label><textarea id="req-coverage" placeholder="Who have you arranged to cover? Any patient care notes?"></textarea></div>
+          <div class="field"><label>Coverage Plan</label><textarea id="req-coverage" placeholder="Who have you arranged to cover?"></textarea></div>
           <div class="field"><label>Notes to Manager</label><textarea id="req-notes" placeholder="Anything else the manager should know..."></textarea></div>
           <button class="submit-btn" id="submit-btn" onclick="submitRequest()">Submit Request</button>
           <div class="form-success" id="form-success">✓ Request submitted! You'll be notified once reviewed.</div>
@@ -574,16 +703,23 @@
         </div>
           <div class="list-filter">
             <input type="text" id="m-filter-search" placeholder="Search name..." oninput="filterUpcoming('manager')" />
-            <select id="m-filter-type" onchange="filterUpcoming('manager')">
-              <option value="">All Types</option>
-              <option value="timeoff">Time Off</option>
-              <option value="sick">Sick</option>
-              <option value="unpaid">Unpaid</option>
-              <option value="birthday">Birthday</option>
-              <option value="anniversary">Anniversary</option>
-              <option value="firstday">First Day</option>
-              <option value="holiday">Holiday</option>
-            </select>
+            <select id="m-filter-type" style="display:none" onchange="filterUpcoming('manager')"></select>
+            <div class="custom-select" id="cs-m-type" style="width:130px;flex-shrink:0">
+              <div class="custom-select-trigger" onclick="csToggle('cs-m-type')" id="cs-m-type-trigger" style="padding:7px 28px 7px 10px;font-size:.8rem">
+                <span id="cs-m-type-val" class="cs-value">All Types</span>
+                <svg class="cs-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              <div class="custom-select-dropdown" id="cs-m-type-dropdown">
+                <div class="cs-option selected" onclick="csFilterSelect('cs-m-type','All Types','m-filter-type','','manager')">All Types</div>
+                <div class="cs-option" onclick="csFilterSelect('cs-m-type','Time Off','m-filter-type','timeoff','manager')">Time Off</div>
+                <div class="cs-option" onclick="csFilterSelect('cs-m-type','Sick','m-filter-type','sick','manager')">Sick</div>
+                <div class="cs-option" onclick="csFilterSelect('cs-m-type','Unpaid','m-filter-type','unpaid','manager')">Unpaid</div>
+                <div class="cs-option" onclick="csFilterSelect('cs-m-type','Birthday','m-filter-type','birthday','manager')">Birthday</div>
+                <div class="cs-option" onclick="csFilterSelect('cs-m-type','Anniversary','m-filter-type','anniversary','manager')">Anniversary</div>
+                <div class="cs-option" onclick="csFilterSelect('cs-m-type','First Day','m-filter-type','firstday','manager')">First Day</div>
+                <div class="cs-option" onclick="csFilterSelect('cs-m-type','Holiday','m-filter-type','holiday','manager')">Holiday</div>
+              </div>
+            </div>
             <span class="filter-count" id="m-filter-count"></span>
           </div>
           <div id="m-upcoming-list" class="event-list"><div class="loading"><div class="spinner"></div>Loading...</div></div>
@@ -1209,11 +1345,22 @@
     mini.classList.toggle('open');
   }
 
+  function csFilterSelect(csId, label, nativeId, value, view) {
+    document.getElementById(csId+'-val').textContent = label;
+    const native = document.getElementById(nativeId);
+    if (native) { native.value = value; }
+    document.querySelectorAll(`#${csId}-dropdown .cs-option`).forEach(o=>o.classList.remove('selected'));
+    event.currentTarget.classList.add('selected');
+    document.getElementById(csId+'-dropdown').classList.remove('open');
+    document.getElementById(csId+'-trigger').classList.remove('open');
+    filterUpcoming(view);
+  }
+
   function filterUpcoming(view) {
     const isStaff = view === 'staff';
     const source  = isStaff ? (window._sUpcoming || []) : (window._mUpcoming || []);
     const search  = document.getElementById(isStaff ? 's-filter-search' : 'm-filter-search')?.value.toLowerCase() || '';
-    const type    = document.getElementById(isStaff ? 's-filter-type'   : 'm-filter-type')?.value || '';
+    const type    = document.getElementById(isStaff ? 's-filter-type' : 'm-filter-type')?.value || '';
     const listId  = isStaff ? 's-upcoming-list' : 'm-upcoming-list';
     const countId = isStaff ? 's-filter-count'  : 'm-filter-count';
     const renderFn= isStaff ? renderStaffRow    : renderManagerRow;
@@ -1349,11 +1496,199 @@
     document.getElementById('cal-floating-tooltip').style.display = 'none';
   }
 
+  // ── CUSTOM SELECT ──────────────────────────────────────────────────────────
+  function csToggle(id) {
+    const dd = document.getElementById(id + '-dropdown');
+    const tr = document.getElementById(id + '-trigger');
+    const isOpen = dd.classList.contains('open');
+    // Close all others
+    document.querySelectorAll('.custom-select-dropdown.open').forEach(el => {
+      el.classList.remove('open');
+      document.querySelector(`[id$="-trigger"].open`)?.classList.remove('open');
+    });
+    document.querySelectorAll('.custom-select-trigger.open').forEach(el => el.classList.remove('open'));
+    if (!isOpen) {
+      // Position using portal (fixed coords from trigger rect)
+      const rect = tr.getBoundingClientRect();
+      dd.style.left = rect.left + 'px';
+      dd.style.top = (rect.bottom + 2) + 'px';
+      dd.style.width = rect.width + 'px';
+      // Flip up if near bottom
+      if (rect.bottom + 220 > window.innerHeight) {
+        dd.style.top = (rect.top - dd.offsetHeight - 2) + 'px';
+      }
+      dd.classList.add('open');
+      tr.classList.add('open');
+    }
+  }
+
+  function csSelect(csId, label, nativeId, value) {
+    const valEl = document.getElementById(csId + '-val');
+    const trigger = document.getElementById(csId + '-trigger');
+    const native = document.getElementById(nativeId);
+    // Update display
+    if (label) {
+      valEl.textContent = label;
+      valEl.className = 'cs-value';
+    } else {
+      valEl.textContent = 'Select role...';
+      valEl.className = 'cs-placeholder';
+    }
+    // Update native select for form submission
+    if (native) native.value = value ?? label ?? '';
+    // Update selected styling
+    document.querySelectorAll(`#${csId}-dropdown .cs-option`).forEach(opt => opt.classList.remove('selected'));
+    event.currentTarget.classList.add('selected');
+    // Close
+    document.getElementById(csId + '-dropdown').classList.remove('open');
+    trigger.classList.remove('open');
+  }
+
+  // Close dropdowns on outside click or scroll
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.custom-select') && !e.target.closest('.custom-date-wrap') &&
+        !e.target.closest('.custom-select-dropdown') && !e.target.closest('.custom-date-popup')) {
+      document.querySelectorAll('.custom-select-dropdown.open').forEach(el => el.classList.remove('open'));
+      document.querySelectorAll('.custom-select-trigger.open').forEach(el => el.classList.remove('open'));
+      document.querySelectorAll('.custom-date-popup.open').forEach(el => el.classList.remove('open'));
+      document.querySelectorAll('.custom-date-trigger.open').forEach(el => el.classList.remove('open'));
+    }
+  });
+  window.addEventListener('scroll', () => {
+    document.querySelectorAll('.custom-select-dropdown.open').forEach(el => el.classList.remove('open'));
+    document.querySelectorAll('.custom-select-trigger.open').forEach(el => el.classList.remove('open'));
+    document.querySelectorAll('.custom-date-popup.open').forEach(el => el.classList.remove('open'));
+    document.querySelectorAll('.custom-date-trigger.open').forEach(el => el.classList.remove('open'));
+  }, {passive:true});
+
+  // Populate time selects
+  function populateTimeSelect(csId, nativeId, includeEod) {
+    const dd = document.getElementById(csId + '-dropdown');
+    const native = document.getElementById(nativeId);
+    let html = '';
+    if (includeEod) html += `<div class="cs-option" onclick="csSelectTime('${csId}','EOD','${nativeId}','eod')">EOD</div>`;
+    for (let h = 6; h <= 20; h++) {
+      for (let m of [0, 30]) {
+        const h12 = h > 12 ? h - 12 : h === 0 ? 12 : h;
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        const label = `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+        const val = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+        const sel = (!includeEod && h === 8 && m === 0) ? ' selected' : '';
+        html += `<div class="cs-option${sel}" onclick="csSelectTime('${csId}','${label}','${nativeId}','${val}')">${label}</div>`;
+      }
+    }
+    dd.innerHTML = html;
+    // Set initial native value
+    if (!includeEod) { if (native) native.value = '08:00'; document.getElementById(csId+'-val').textContent = '8:00 AM'; }
+    else { if (native) native.value = 'eod'; document.getElementById(csId+'-val').textContent = 'EOD'; }
+  }
+  function csSelectTime(csId, label, nativeId, value) {
+    document.getElementById(csId+'-val').textContent = label;
+    document.getElementById(csId+'-val').className = 'cs-value';
+    const native = document.getElementById(nativeId);
+    if (native) native.value = value;
+    document.querySelectorAll(`#${csId}-dropdown .cs-option`).forEach(o=>o.classList.remove('selected'));
+    event.currentTarget.classList.add('selected');
+    document.getElementById(csId+'-dropdown').classList.remove('open');
+    document.getElementById(csId+'-trigger').classList.remove('open');
+  }
+
+  // ── CUSTOM DATE PICKER ──────────────────────────────────────────────────────
+  const cdState = {};
+
+  function cdInit(id) {
+    const now = new Date();
+    cdState[id] = { year: now.getFullYear(), month: now.getMonth(), selected: null };
+    cdRender(id);
+  }
+
+  function cdToggle(id) {
+    const popup = document.getElementById(id + '-popup');
+    const trigger = document.getElementById(id + '-trigger');
+    const isOpen = popup.classList.contains('open');
+    // Close all
+    document.querySelectorAll('.custom-date-popup.open').forEach(el => el.classList.remove('open'));
+    document.querySelectorAll('.custom-date-trigger.open').forEach(el => el.classList.remove('open'));
+    if (!isOpen) {
+      if (!cdState[id]) cdInit(id);
+      cdRender(id);
+      // Position portal
+      const rect = trigger.getBoundingClientRect();
+      popup.style.left = rect.left + 'px';
+      popup.style.top = (rect.bottom + 4) + 'px';
+      // Flip up if near bottom
+      if (rect.bottom + 320 > window.innerHeight) {
+        popup.style.top = (rect.top - 300) + 'px';
+      }
+      // Clamp right edge
+      if (rect.left + 260 > window.innerWidth) {
+        popup.style.left = (window.innerWidth - 268) + 'px';
+      }
+      popup.classList.add('open');
+      trigger.classList.add('open');
+    }
+  }
+
+  function cdPrevMonth(id) { if (!cdState[id]) cdInit(id); cdState[id].month--; if (cdState[id].month < 0) { cdState[id].month=11; cdState[id].year--; } cdRender(id); }
+  function cdNextMonth(id) { if (!cdState[id]) cdInit(id); cdState[id].month++; if (cdState[id].month > 11) { cdState[id].month=0; cdState[id].year++; } cdRender(id); }
+
+  function cdRender(id) {
+    const s = cdState[id];
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById(id+'-month').textContent = `${months[s.month]} ${s.year}`;
+    const grid = document.getElementById(id+'-grid');
+    const today = new Date();
+    const firstDay = new Date(s.year, s.month, 1).getDay();
+    const days = new Date(s.year, s.month+1, 0).getDate();
+    const offset = firstDay === 0 ? 6 : firstDay - 1;
+    let html = ['Mo','Tu','We','Th','Fr','Sa','Su'].map(d=>`<div class="cd-header">${d}</div>`).join('');
+    for (let i=0;i<offset;i++) html+=`<div class="cd-cell other-month"></div>`;
+    for (let d=1;d<=days;d++) {
+      const dateStr = `${s.year}-${String(s.month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const isToday = today.getFullYear()===s.year&&today.getMonth()===s.month&&today.getDate()===d;
+      const isSel = s.selected === dateStr;
+      html+=`<div class="cd-cell${isToday?' today':''}${isSel?' selected':''}" onclick="cdSelect('${id}','${dateStr}')">${d}</div>`;
+    }
+    grid.innerHTML = html;
+  }
+
+  function cdSelect(id, dateStr) {
+    if (!cdState[id]) cdInit(id);
+    cdState[id].selected = dateStr;
+    // Format display
+    const d = new Date(dateStr+'T00:00:00');
+    const fmt = d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    document.getElementById(id+'-val').textContent = fmt;
+    document.getElementById(id+'-val').className = '';
+    // Update hidden native input
+    const nativeMap = {'cdw-start':'req-start','cdw-end':'req-end','cdw-partial':'req-partial-date'};
+    const native = document.getElementById(nativeMap[id]);
+    if (native) native.value = dateStr;
+    cdRender(id);
+    // Close popup
+    document.getElementById(id+'-popup').classList.remove('open');
+    document.getElementById(id+'-trigger').classList.remove('open');
+  }
+
   const todayStr = new Date().toISOString().split('T')[0];
   document.getElementById('req-start').value = todayStr;
   document.getElementById('req-end').value   = todayStr;
   const partialDateEl = document.getElementById('req-partial-date');
   if (partialDateEl) partialDateEl.value = todayStr;
+
+  // Initialize custom components
+  populateTimeSelect('cs-depart', 'req-depart-time', false);
+  populateTimeSelect('cs-return', 'req-return-time', true);
+  ['cdw-start','cdw-end','cdw-partial'].forEach(cdInit);
+  // Set today as default in date pickers
+  const todayDate = new Date();
+  ['cdw-start','cdw-end','cdw-partial'].forEach(id => {
+    cdState[id].selected = todayStr;
+    const fmt = todayDate.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    document.getElementById(id+'-val').textContent = fmt;
+    document.getElementById(id+'-val').className = '';
+    cdRender(id);
+  });
 
   switchView('staff');
   loadData();
