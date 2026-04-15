@@ -797,10 +797,10 @@
 
   function filterMyRequests() {
     const nameVal = document.getElementById('req-name').value.trim();
-    const parts = nameVal.split(' ').filter(p => p.length >= 2);
+    const parts = nameVal.split(' ').filter(p => p.length >= 1);
     const el = document.getElementById('my-requests-list');
 
-    // Only fire when both first AND last name are present
+    // Need at least first name and one more character for last name/initial
     if (parts.length < 2) {
       closeDrawer();
       return;
@@ -808,16 +808,20 @@
 
     const firstName = parts[0].toLowerCase();
     const lastName = parts[parts.length-1].toLowerCase();
-    // Last entry could be a full last name OR just an initial
     const lastInitial = lastName[0].toLowerCase();
+
+    console.log('filterMyRequests:', { firstName, lastName, lastInitial, totalEvents: allEvents.length });
+    console.log('officeMgrEvents:', allEvents.filter(e=>e.isOfficeMgrRequest).map(e=>cleanSummary(e.summary)));
 
     const mine = allEvents.filter(e => {
       if (!e.isOfficeMgrRequest) return false;
       const s = cleanSummary(e.summary).toLowerCase();
-      // Match "Jane S's Time Off" or "Jane S Out Sick"
-      // Works whether user typed "Jane Smith" or "Jane S"
-      return s.startsWith(`${firstName} ${lastInitial}`);
+      const matches = s.startsWith(`${firstName} ${lastInitial}`);
+      console.log(`  checking "${s}" against "${firstName} ${lastInitial}": ${matches}`);
+      return matches;
     });
+
+    console.log('matches found:', mine.length);
 
     if (!mine.length) {
       closeDrawer();
