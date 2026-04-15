@@ -371,7 +371,7 @@
             <div class="my-req-panel" id="requests-drawer" style="display:none">
               <div class="my-req-header">
                 <span>My Requests</span>
-                <button onclick="closeDrawer()" style="background:none;border:none;cursor:pointer;font-size:.78rem;color:var(--text-muted);padding:0;font-family:'DM Sans',sans-serif">✕</button>
+                <button onclick="closeDrawer()">dismiss</button>
               </div>
               <div id="my-requests-list"></div>
             </div>
@@ -878,25 +878,25 @@
     }
 
     // Render compact mini items
-    el.innerHTML = mine.map(e => {
+    el.innerHTML = mine.map((e, idx) => {
       const isPend = e.isPending;
       const dotColor = isPend ? 'var(--pending)' : 'var(--approved)';
-      const statusBg = isPend ? 'var(--pending-light)' : 'var(--approved-light)';
-      const label = isPend ? '⏳ Pending' : '✓ Approved';
+      const label = isPend ? 'Pending' : 'Approved';
       const s = cleanSummary(e.summary);
       const type = s.includes('Out Sick') ? 'Out Sick' :
                    s.includes("'s Time Off") ? 'Time Off' :
                    s.split(' - ').length > 1 ? s.split(' - ')[1] :
                    TYPE_LABELS[e.type] ?? 'Time Off';
-      return `<div class="req-mini-item">
-        <div class="req-mini-dot" style="background:${dotColor}"></div>
-        <div style="flex:1;min-width:0">
-          <div class="req-mini-name">${type}</div>
-          <div class="req-mini-date">${fmtRange(e)}</div>
-          <div style="margin-top:4px">
-            <span style="font-size:.7rem;font-weight:600;padding:2px 7px;border-radius:20px;background:${statusBg};color:${dotColor}">${label}</span>
+      const border = idx < mine.length - 1 ? `border-bottom:1px solid var(--border);` : '';
+      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;gap:8px;${border}">
+        <div style="display:flex;align-items:center;gap:7px;min-width:0">
+          <div style="width:6px;height:6px;border-radius:50%;background:${dotColor};flex-shrink:0"></div>
+          <div>
+            <div style="font-size:.82rem;font-weight:500;color:var(--text)">${type}</div>
+            <div style="font-size:.73rem;color:var(--text-muted);margin-top:1px">${fmtRange(e)}</div>
           </div>
         </div>
+        <span style="font-size:.7rem;font-weight:600;color:${dotColor};white-space:nowrap">${label}</span>
       </div>`;
     }).join('');
 
