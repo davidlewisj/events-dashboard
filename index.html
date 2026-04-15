@@ -763,11 +763,26 @@
     if (emailEl && !emailManuallyEdited) {
       if (parts.length >= 2) {
         const firstInitial = parts[0][0].toLowerCase();
-        const lastName = parts[parts.length-1].toLowerCase().replace(/[^a-z]/g,'');
-        emailEl.value = `${firstInitial}${lastName}@tmjsleepsolutionsnw.com`;
+        const lastPart = parts[parts.length-1].toLowerCase().replace(/[^a-z]/g,'');
+        // Only use last part if it's a real last name (more than 1 char)
+        // If user typed "Sumiko H" the H is just an initial — wait for full last name
+        if (lastPart.length > 1) {
+          emailEl.value = `${firstInitial}${lastPart}@tmjsleepsolutionsnw.com`;
+        } else {
+          // Single initial entered — show placeholder format but don't lock it
+          emailEl.value = `${firstInitial}[lastname]@tmjsleepsolutionsnw.com`;
+          emailEl.style.color = 'var(--text-muted)';
+          emailEl.dataset.placeholder = 'true';
+        }
       } else {
         emailEl.value = '';
+        emailEl.style.color = '';
       }
+    }
+    // Reset placeholder styling once real last name entered
+    if (emailEl && emailEl.dataset.placeholder === 'true' && parts.length >= 2 && parts[parts.length-1].length > 1) {
+      emailEl.style.color = '';
+      emailEl.dataset.placeholder = 'false';
     }
 
     filterMyRequests();
@@ -810,18 +825,17 @@
     const lastName = parts[parts.length-1].toLowerCase();
     const lastInitial = lastName[0].toLowerCase();
 
-    console.log('filterMyRequests:', { firstName, lastName, lastInitial, totalEvents: allEvents.length });
-    console.log('officeMgrEvents:', allEvents.filter(e=>e.isOfficeMgrRequest).map(e=>cleanSummary(e.summary)));
-
+    // Search ALL events (not just office-manager ones) by name
+    // Events from Gusto won't have the OFFICE_MANAGER tag but should still show
     const mine = allEvents.filter(e => {
-      if (!e.isOfficeMgrRequest) return false;
+      if (!isTimeOff(e) && !e.isOfficeMgrRequest) return false;
+      if (e.type === 'payday' || e.type === 'birthday' || e.type === 'anniversary' || e.type === 'firstday' || e.type === 'holiday') return false;
       const s = cleanSummary(e.summary).toLowerCase();
-      const matches = s.startsWith(`${firstName} ${lastInitial}`);
-      console.log(`  checking "${s}" against "${firstName} ${lastInitial}": ${matches}`);
-      return matches;
+      // Match "sumiko h's time off", "sumiko h out sick", "sumiko h - pto", "sumiko hagi..."
+      return s.startsWith(`${firstName} ${lastInitial}`);
     });
 
-    console.log('matches found:', mine.length);
+    console.log('matches found:', mine.length, mine.map(e=>e.summary));
 
     if (!mine.length) {
       closeDrawer();
